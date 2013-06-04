@@ -6,6 +6,8 @@ So i've added a Leaflet.NonTiledLayer which gets the imagery for the complete ma
 Leaflet.NonTiledLayer.WMS is the implementation which makes WMS requests, similar to the TileLayer.WMS.
 
 You can see a sample here
+
 http://oliverheilig.github.io/Leaflet.NonTiledLayer/NonTiledDemo.html
-It uses the layer PTV's xMapServer WMS service, which needs a tiled+non-tiled hybrid approach
-(which is the reason i've built this), together with a OSM WMS overlay which also cannot be requested in tiles.
+
+It uses the xMapServer WMS service of www.ptvgroup.com, which needs a tiled/non-tiled hybrid approach
+(an that is the reason i've built this), together with a OSM WMS overlay which also cannot be requested in tiles.
