@@ -1,0 +1,75 @@
+/*
+ * L.TileLayer.WMS is used for putting WMS tile layers on the map.
+ */
+
+L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
+
+    defaultWmsParams: {
+        service: 'WMS',
+        request: 'GetMap',
+        version: '1.1.1',
+        layers: '',
+        styles: '',
+        format: 'image/jpeg',
+        transparent: false
+    },
+
+    initialize: function (url, options) { // (String, Object)
+        this._url = url;
+
+        var wmsParams = L.extend({}, this.defaultWmsParams);
+
+        for (var i in options) {
+            // all keys that are not TileLayer options go to WMS params
+            if (!this.options.hasOwnProperty(i)) {
+                wmsParams[i] = options[i];
+            }
+        }
+
+        this.wmsParams = wmsParams;
+
+        L.setOptions(this, options);
+    },
+
+    onAdd: function (map) {
+        var projectionKey = parseFloat(this.wmsParams.version) >= 1.3 ? 'crs' : 'srs';
+        this.wmsParams[projectionKey] = map.options.crs.code;
+
+        L.NonTiledLayer.prototype.onAdd.call(this, map);
+    },
+
+    getImageUrl: function (world1, world2, width, height) {
+        var wmsParams = this.wmsParams;
+        wmsParams.width = width;
+        wmsParams.height = height;
+
+        var crs = map.options.crs;
+        var p1 = crs.project(world1);
+        var p2 = crs.project(world2);
+
+        var url = this._url + L.Util.getParamString(wmsParams, this._url) + '&bbox=' + p1.x + ',' + p2.y + ',' + p2.x + ',' + p1.y;
+        return url;
+    },
+
+    _latLonToPtvMercator: function (loc) {
+        var x = 6371000.0 * loc.lng * Math.PI / 180.0;
+        var y = 6371000.0 * Math.log(Math.tan(Math.PI / 4.0 + loc.lat * Math.PI / 360.0));
+
+        return new L.Point(x, y);
+    },
+
+    setParams: function (params, noRedraw) {
+
+        L.extend(this.wmsParams, params);
+
+        if (!noRedraw) {
+            this.redraw();
+        }
+
+        return this;
+    }
+});
+
+L.nonTiledLayer.wms = function (url, options) {
+    return new L.NonTiledLayer.WMS(url, options);
+};

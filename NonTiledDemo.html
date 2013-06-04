@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet-xMapServer Example</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="http://leafletjs.com/dist/leaflet.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://leafletjs.com/dist/leaflet.ie.css" />
+    <![endif]-->
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		html, body, #map {
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+    <div id="map" />
+    <script src="http://leafletjs.com/dist/leaflet.js"></script>
+    <script src="./NonTiledLayer.js"></script>
+    <script src="./NonTiledLayer.WMS.js"></script>
+    <script src="./leaflet-x.js"></script>
+    <script>
+      // initialize leaflet
+      var map = new L.Map('map');
+
+      // center germany
+      map.setView(new L.LatLng(49.01, 8.4), 16);
+
+      // using the xmap WMS servlet
+      var xMapWmsUrl = 'http://80.146.239.180/WMS/WMS';
+
+      // add background layer
+      var background = X.backgroundLayer(xMapWmsUrl, "TOMTOM");
+      map.addLayer(background);
+
+      // add label layer
+      var labels = X.labelLayer(xMapWmsUrl, "TOMTOM");
+      map.addLayer(labels);
+
+      // add bus stops
+      var busStops = new L.NonTiledLayer.WMS('http://ows.terrestris.de/osm-haltestellen', {
+      opacity: 1.0, layers: 'OSM-Bushaltestellen', format: 'image/png', transparent: true,
+      attribution: 'terrestris' });
+      map.addLayer(busStops);
+
+      // add layer selector
+      var overlays = {
+      "Background": background,
+      "Labels": labels,
+      "Bus Stops": busStops
+      };
+      L.control.layers({}, overlays).addTo(map);
+    </script>
+</body>
+</html>
