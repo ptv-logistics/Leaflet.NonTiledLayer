@@ -51,13 +51,6 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
         return url;
     },
 
-    _latLonToPtvMercator: function (loc) {
-        var x = 6371000.0 * loc.lng * Math.PI / 180.0;
-        var y = 6371000.0 * Math.log(Math.tan(Math.PI / 4.0 + loc.lat * Math.PI / 360.0));
-
-        return new L.Point(x, y);
-    },
-
     setParams: function (params, noRedraw) {
 
         L.extend(this.wmsParams, params);

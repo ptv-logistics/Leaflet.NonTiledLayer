@@ -31,7 +31,7 @@
       // center germany
       map.setView(new L.LatLng(49.01, 8.4), 16);
 
-      // using the xmap WMS servlet
+      // using the xmap WMS servlet 
       var xMapWmsUrl = 'http://80.146.239.180/WMS/WMS';
 
       // add background layer
@@ -48,11 +48,18 @@
       attribution: 'terrestris' });
       map.addLayer(busStops);
 
+	  // add truck attributes
+      var ta = new L.NonTiledLayer.WMS(xMapWmsUrl, {
+      opacity: 1.0, layers: 'xmap-truckattributes', format: 'image/png', transparent: true,
+      attribution: 'TOMTOM' });
+      map.addLayer(ta);
+	  
       // add layer selector
       var overlays = {
       "Background": background,
       "Labels": labels,
-      "Bus Stops": busStops
+      "Bus Stops": busStops,     
+	  "Truck Attributes": ta
       };
       L.control.layers({}, overlays).addTo(map);
     </script>
