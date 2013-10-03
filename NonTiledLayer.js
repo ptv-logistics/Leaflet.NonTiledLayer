@@ -1,9 +1,16 @@
-﻿// the layer for the label overlays
+﻿/*
+ * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
+ */
+
 L.NonTiledLayer = L.Class.extend({
 	options: {
 		attribution: '',
     },
-
+	
+	// override this method in the inherited class
+    getImageUrl: function (world1, world2, width, height) {
+    },
+	
 	initialize: function (url, options) {
 		options = L.setOptions(this, options);
     },
@@ -11,7 +18,7 @@ L.NonTiledLayer = L.Class.extend({
     onAdd: function (map) {
         this._map = map;
         this._update();
-        this._map.on('moveend', this._update, this);
+        this._map.on('moveend', this._update, this);	
     },
 
     onRemove: function (map) {
@@ -19,16 +26,16 @@ L.NonTiledLayer = L.Class.extend({
 
         if (this._labelOverlay)
             this._map.removeLayer(this._labelOverlay);
+			
+		this._labelOverlay.off('load', this._imageloaded, this);		
+		this._labelOverlay = null;
     },
 
 	getAttribution: function () {
 		return this.options.attribution;
 	},
-
+	
     _update: function () {
-        if (this._labelOverlay)
-            this._map.removeLayer(this._labelOverlay);
-
         var wgsBounds = this._map.getBounds();
 
         // truncate bounds to valid wgs bounds
@@ -55,14 +62,38 @@ L.NonTiledLayer = L.Class.extend({
         // resulting image is too small
         if (width < 32 || height < 32)
             return;
+				
+		var url = this.getImageUrl(world1, world2, width, height);
+		var bounds = new L.LatLngBounds(world1, world2);
+		
+		if(this._labelOverlay)
+		{ 
+			// update existing image hide the existing image to avoid flicker
+			L.DomUtil.setOpacity(this._labelOverlay._image, 0);		
 
-        this._labelOverlay = new L.ImageOverlay(this.getImageUrl(world1, world2, width, height), new L.LatLngBounds(world1, world2));
+			// set new url and bounds
+			// this._labelOverlay.setUrl(url); only implemented in master?
+			this._labelOverlay._url = url;
+    		this._labelOverlay._image.src = url;
+			this._labelOverlay._bounds = bounds;
 
-        this._map.addLayer(this._labelOverlay);
+			// initializes the new position/transform
+			this._labelOverlay._reset();
+		}
+		else
+		{
+			// create the initial label layer
+			this._labelOverlay = new L.ImageOverlay(url, bounds);
+			this._map.addLayer(this._labelOverlay);
+			
+			// attach to load event to reset opacity later
+			this._labelOverlay.on('load', this._imageloaded, this);
+		}			
     },
-
-    getImageUrl: function (world1, world2, width, height) {
-    }
+	
+	_imageloaded: function () {
+			this._labelOverlay._updateOpacity();
+	}
 });
 
 L.nonTiledLayer = function () {
