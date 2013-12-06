@@ -1,5 +1,4 @@
 ﻿// PTV XServer support for leaflet
-
 var X, originalX;
 
 if (typeof exports !== undefined + '') {
@@ -16,20 +15,27 @@ if (typeof exports !== undefined + '') {
     window.X = X;
 }
 
-X.version = '0.5.1';
+X.version = '0.7.0';
 
 X.backgroundLayer = function (xMapWmsUrl, mapprovider) {
-    return new L.TileLayer.WMS(xMapWmsUrl, {
-        maxZoom: 19, minZoom: 0, opacity: 1.0, noWrap: true,
-        layers: 'xmap-ajaxbg', format: 'image/gif', transparent: false,
+    return new L.TileLayer.WMS(xMapWmsUrl + "/WMS", {
+        maxZoom: 19,
+        minZoom: 0,
+        opacity: 1.0,
+        noWrap: true,
+        layers: 'xmap-ajaxbg',
+        format: 'image/gif',
+        transparent: false,
         attribution: '<a href="http://www.ptvgroup.com">PTV</a>, ' + mapprovider
     });
 };
 
 X.labelLayer = function (xMapWmsUrl, mapprovider) {
-    return new L.NonTiledLayer.WMS(xMapWmsUrl, {
-        opacity: 1.0, 
-        layers: 'xmap-ajaxfg', format: 'image/gif', transparent: true,
+    return new L.NonTiledLayer.WMS(xMapWmsUrl + "/WMS", {
+        opacity: 1.0,
+        layers: 'xmap-ajaxfg',
+        format: 'image/gif',
+        transparent: true,
         attribution: '<a href="http://www.ptvgroup.com">PTV</a>, ' + mapprovider
     });
 };

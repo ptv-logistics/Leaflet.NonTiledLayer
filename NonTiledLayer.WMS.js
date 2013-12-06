@@ -1,7 +1,6 @@
 /*
- * L.TileLayer.WMS is used for putting WMS tile layers on the map.
+ * L.NonTiledLayer.WMS is used for putting WMS tile layers on the map.
  */
-
 L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 
     defaultWmsParams: {
