@@ -15,7 +15,7 @@ if (typeof exports !== undefined + '') {
     window.X = X;
 }
 
-X.version = '0.7.0';
+X.version = '0.7.1';
 
 X.backgroundLayer = function (xMapWmsUrl, mapprovider) {
     return new L.TileLayer.WMS(xMapWmsUrl + "/WMS", {
@@ -30,8 +30,8 @@ X.backgroundLayer = function (xMapWmsUrl, mapprovider) {
     });
 };
 
-X.labelLayer = function (xMapWmsUrl, mapprovider) {
-    return new L.NonTiledLayer.WMS(xMapWmsUrl + "/WMS", {
+X.labelLayer = function (xMapWmsUrl, mapprovider, token) {
+    return new L.NonTiledLayer.WMS(xMapWmsUrl + "/WMS?token=" + token, {
         opacity: 1.0,
         layers: 'xmap-ajaxfg',
         format: 'image/gif',
