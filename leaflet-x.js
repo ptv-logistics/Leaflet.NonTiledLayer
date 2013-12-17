@@ -31,7 +31,7 @@ X.backgroundLayer = function (xMapWmsUrl, mapprovider) {
 };
 
 X.labelLayer = function (xMapWmsUrl, mapprovider, token) {
-    return new L.NonTiledLayer.WMS(xMapWmsUrl + "/WMS?token=" + token, {
+    return new L.NonTiledLayer.WMS(xMapWmsUrl + "/WMS?xtok=" + token, {
         opacity: 1.0,
         layers: 'xmap-ajaxfg',
         format: 'image/gif',
