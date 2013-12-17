@@ -42,7 +42,8 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
         wmsParams.width = width;
         wmsParams.height = height;
 
-        var crs = map.options.crs;
+        var crs = this._map.options.crs;
+			
         var p1 = crs.project(world1);
         var p2 = crs.project(world2);
 
