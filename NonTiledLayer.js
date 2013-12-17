@@ -29,6 +29,27 @@ L.NonTiledLayer = L.Class.extend({
         this._labelOverlay = null;
     },
 
+    addTo: function (map) {
+        map.addLayer(this);
+        return this;
+    },
+
+    // TODO remove bringToFront/bringToBack duplication from TileLayer/Path
+    bringToFront: function () {
+        if (this._labelOverlay) {
+            this._map._panes.overlayPane.appendChild(this._labelOverlay);
+        }
+        return this;
+    },
+
+    bringToBack: function () {
+        var pane = this._map._panes.overlayPane;
+        if (this._labelOverlay) {
+            pane.insertBefore(this._labelOverlay, pane.firstChild);
+        }
+        return this;
+    },
+
     getAttribution: function () {
         return this.options.attribution;
     },
