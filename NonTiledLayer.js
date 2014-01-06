@@ -39,9 +39,7 @@ L.NonTiledLayer = L.Class.extend({
  		this._pane.removeChild(this._image);
 
 		this._map.off('moveend', this._update, this);
-
-		this._pane.removeChild(this._image);
-
+		
 		if (map.options.zoomAnimation) {
 			map.off('zoomanim', this._animateZoom, this);
 		}

@@ -33,7 +33,7 @@
         var map = new L.Map('map');
 
         // http://bl.ocks.org/rsudekum/5431771
-        var labelPane = map._createPane('leaflet-label-pane', map.getPanes().shadowPane);
+        var topmostPane = map._createPane('leaflet-label-pane', map.getPanes().markerPane);
 		
          // center Karlsruhe
         map.setView(new L.LatLng(49.01, 8.4), 16);
@@ -66,7 +66,7 @@
             format: 'image/png',
             transparent: true,
             attribution: 'TOMTOM', 
-			pane: labelPane
+			pane: topmostPane
         });
         map.addLayer(ta);
 

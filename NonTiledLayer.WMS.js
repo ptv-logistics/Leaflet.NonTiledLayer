@@ -14,7 +14,7 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
     },
 
     initialize: function (url, options) { // (String, Object)
-        this._url = url;
+        this._wmsUrl = url;
 
         var wmsParams = L.extend({}, this.defaultWmsParams);
 
@@ -47,7 +47,7 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
         var p1 = crs.project(world1);
         var p2 = crs.project(world2);
 
-        var url = this._url + L.Util.getParamString(wmsParams, this._url) + '&bbox=' + p1.x + ',' + p2.y + ',' + p2.x + ',' + p1.y;
+        var url = this._wmsUrl + L.Util.getParamString(wmsParams, this._wmsUrl) + '&bbox=' + p1.x + ',' + p2.y + ',' + p2.x + ',' + p1.y;
         return url;
     },
 
