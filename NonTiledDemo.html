@@ -16,6 +16,9 @@
         #map {
             height: 100%;
         }
+		    .leaflet-label-pane {
+      pointer-events: none;
+    } 
     </style>
 </head>
 
@@ -29,6 +32,9 @@
         // initialize leaflet
         var map = new L.Map('map');
 
+        // http://bl.ocks.org/rsudekum/5431771
+        var labelPane = map._createPane('leaflet-label-pane', map.getPanes().shadowPane);
+		
          // center Karlsruhe
         map.setView(new L.LatLng(49.01, 8.4), 16);
 
@@ -59,7 +65,8 @@
             layers: 'xmap-truckattributes',
             format: 'image/png',
             transparent: true,
-            attribution: 'TOMTOM'
+            attribution: 'TOMTOM', 
+			pane: labelPane
         });
         map.addLayer(ta);
 
