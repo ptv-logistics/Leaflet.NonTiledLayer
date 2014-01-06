@@ -5,7 +5,8 @@ L.NonTiledLayer = L.Class.extend({
  	includes: L.Mixin.Events,
 	options: {
         attribution: '',
-		opacity: 1
+		opacity: 1,
+		pane: null
     },
 
     // override this method in the inherited class
