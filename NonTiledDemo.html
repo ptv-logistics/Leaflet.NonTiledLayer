@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 
+<html>
 <head>
     <title>Leaflet NonTiledLayer Example</title>
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content= "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <link href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" rel="stylesheet">
     <style>
         body {
             padding: 0;
@@ -16,53 +16,52 @@
         #map {
             height: 100%;
         }
-		.leaflet-label-pane {
-			pointer-events: none;
-    } 
+        .leaflet-label-pane {
+            pointer-events: none;
+        } 
     </style>
 </head>
 
 <body>
-    <div id="map" />
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
-    <script src="./NonTiledLayer.js"></script>
-    <script src="./NonTiledLayer.WMS.js"></script>
-    <script>
+    <div id="map">
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
+	<script src="./NonTiledLayer.js"></script>
+	<script src="./NonTiledLayer.WMS.js"></script><script>
         // initialize leaflet
         var map = new L.Map('map');
 
         // create a new pane which holds the layers which should always be rendered topmost
-		// also see: http://bl.ocks.org/rsudekum/5431771
+        // also see: http://bl.ocks.org/rsudekum/5431771
         var topmostPane = map._createPane('leaflet-label-pane', map.getPanes().markerPane);
-		
-         // center Karlsruhe
+        
+        // center Karlsruhe
         map.setView(new L.LatLng(49.01, 8.4), 16);
 
-         // using the xmap WMS servlet   
+        // using the xmap WMS servlet   
         var xMapWmsUrl = 'http://80.146.239.180/WMS/WMS';
-		var xMapAttribution =  '<a href="http://www.ptvgroup.com">PTV</a>, HERE';
+        var xMapAttribution =  '<a href="http://www.ptvgroup.com">PTV<\/a>, HERE';
 
         // add (tiled) background layer
         var background = new L.TileLayer.WMS(xMapWmsUrl, {
-			maxZoom: 19,
-			minZoom: 0,
-			opacity: 1.0,
-			noWrap: true,
-			layers: 'xmap-ajaxbg-sandbox',
-			format: 'image/png',
-			transparent: false,
-			attribution: xMapAttribution
-		});
+            maxZoom: 19,
+            minZoom: 0,
+            opacity: 1.0,
+            noWrap: true,
+            layers: 'xmap-ajaxbg-sandbox',
+            format: 'image/png',
+            transparent: false,
+            attribution: xMapAttribution
+        });
         map.addLayer(background);
 
         // add (non-tiled) label layer. Default - insert at overlayPane
         var labels = new L.NonTiledLayer.WMS(xMapWmsUrl, {
-			opacity: 1.0,
-			layers: 'xmap-ajaxfg-sandbox',
-			format: 'image/png',
-			transparent: true,
-			attribution: xMapAttribution
-		});
+            opacity: 1.0,
+            layers: 'xmap-ajaxfg-sandbox',
+            format: 'image/png',
+            transparent: true,
+            attribution: xMapAttribution
+        });
         map.addLayer(labels);
 
         // add truck attributes. Insert at newly created topmostPane
@@ -72,18 +71,18 @@
             format: 'image/png',
             transparent: true,
             attribution: xMapAttribution,
-			pane: topmostPane
+            pane: topmostPane
         });
         map.addLayer(ta);
 
-		// add bus stops. Insert at newly created topmostPane
+        // add bus stops. Insert at newly created topmostPane
         var busStops = new L.NonTiledLayer.WMS('http://ows.terrestris.de/osm-haltestellen', {
             opacity: 1.0,
             layers: 'OSM-Bushaltestellen',
             format: 'image/png',
             transparent: true,
             attribution: 'terrestris',
-			pane: topmostPane
+            pane: topmostPane
         });
         map.addLayer(busStops);
 
@@ -97,5 +96,4 @@
         L.control.layers({}, overlays).addTo(map);
     </script>
 </body>
-
 </html>
