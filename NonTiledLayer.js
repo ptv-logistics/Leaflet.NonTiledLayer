@@ -22,7 +22,7 @@ L.NonTiledLayer = L.Class.extend({
         this._map = map;
 
         if(!this._div)
-            this._div = L.DomUtil.create('div', 'leaflet-overlay-pane');
+            this._div = L.DomUtil.create('div', 'leaflet-image-layer');
 		
 		if(this.options.pane)
 			this._pane = this.options.pane;
