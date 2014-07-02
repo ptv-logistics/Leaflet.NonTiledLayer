@@ -99,8 +99,7 @@ L.NonTiledLayer = L.Class.extend({
 			galleryimg: 'no',
 			onselectstart: L.Util.falseFn,
 			onmousemove: L.Util.falseFn,
-			onload: L.bind(this._onImageLoad, this),
-			src: this._url
+			onload: L.bind(this._onImageLoad, this)
 		});
 
 		return _image;
