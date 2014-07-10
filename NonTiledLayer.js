@@ -71,7 +71,7 @@ L.NonTiledLayer = L.Class.extend({
 
 	bringToBack: function () {
 		if (this._div) {
-		    this._pane.insertBefore(this._div, pane.firstChild);
+		    this._pane.insertBefore(this._div, this._pane.firstChild);
 		}
 		return this;
 	},
