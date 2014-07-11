@@ -49,7 +49,7 @@
         });
         map.addLayer(background);
 
-        // add (non-tiled) label layer. Default - insert at overlayPane
+        // add (non-tiled) label layer. Insert at tile pane
         var labels = new L.NonTiledLayer.WMS(xMapWmsUrl, {
             opacity: 1.0,
             layers: 'xmap-ajaxfg-sandbox',
@@ -57,11 +57,12 @@
             transparent: true,
             attribution: xMapAttribution,
             pane: map.getPanes().tilePane,
-            zIndex: 1,
+            zIndex: 50,
             opacity: .8
         });
         map.addLayer(labels);
 
+        // add truck attributes. Default - insert at overlayPane
         var ta = new L.NonTiledLayer.WMS(xMapWmsUrl, {
             opacity: 1.0,
             layers: 'xmap-truckattributes',
@@ -71,7 +72,7 @@
         });
         map.addLayer(ta);
 
-        // add bus stops. Insert at newly created topmostPane
+        // add bus stops. Default - insert at overlayPane
         var busStops = new L.NonTiledLayer.WMS('http://ows.terrestris.de/osm-haltestellen', {
             opacity: 1.0,
             layers: 'OSM-Bushaltestellen',
