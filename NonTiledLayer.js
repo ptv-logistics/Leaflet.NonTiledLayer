@@ -5,8 +5,9 @@ L.NonTiledLayer = L.Class.extend({
  	includes: L.Mixin.Events,
 	options: {
         attribution: '',
-		opacity: 1,
-		pane: null
+		opacity: 1.0,
+		pane: null,
+        zIndex: 0
 	},
 
     // override this method in the inherited class
@@ -57,7 +58,12 @@ L.NonTiledLayer = L.Class.extend({
 
 	setOpacity: function (opacity) {
 		this.options.opacity = opacity;
-		this._updateOpacity();
+		
+		if (this._currentImage)
+		    this._updateOpacity(this._currentImage);
+		if (this._bufferImage)
+		    this._updateOpacity(this._bufferImage);
+
 		return this;
 	},
 	
@@ -83,7 +89,8 @@ L.NonTiledLayer = L.Class.extend({
 	
     
 	_initImage: function () {		
-		var _image = L.DomUtil.create('img', 'leaflet-image-layer');
+	    var _image = L.DomUtil.create('img', 'leaflet-image-layer');
+	    _image.style.zIndex = this.options.zIndex;
 		this._div.appendChild(_image);
 
 		if (this._map.options.zoomAnimation && L.Browser.any3d) {
@@ -92,7 +99,7 @@ L.NonTiledLayer = L.Class.extend({
 			L.DomUtil.addClass(_image, 'leaflet-zoom-hide');
 		}
 
-		this._updateOpacity();
+		this._updateOpacity(_image);
 
 		//TODO createImage util method to remove duplication
 		L.extend(_image, {
@@ -199,20 +206,14 @@ L.NonTiledLayer = L.Class.extend({
 		
 		this._bufferImage = this._currentImage;
 		
-		L.DomUtil.setOpacity(this._currentImage, 1);      
+		L.DomUtil.setOpacity(this._currentImage, this.options.opacity);
 		
 	    this.fire('load');
     },
 
-    setOpacity: function (opacity) {
-        this.options.opacity = opacity;
-        this._updateOpacity();
-        return this;
-    },
-
-	_updateOpacity: function () {
-		L.DomUtil.setOpacity(this._div, this.options.opacity);
-	}
+    _updateOpacity: function (image) {       
+        L.DomUtil.setOpacity(image, this.options.opacity);
+    }
 });
 
 L.nonTiledLayer = function () {
