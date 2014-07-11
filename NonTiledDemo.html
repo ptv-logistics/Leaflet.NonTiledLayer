@@ -1,45 +1,40 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 
 <html>
 <head>
     <title>Leaflet NonTiledLayer Example</title>
     <meta content="yes" name="apple-mobile-web-app-capable">
-    <meta content= "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
     <link href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" rel="stylesheet">
     <style>
         body {
             padding: 0;
             margin: 0;
         }
+
         html,
         body,
         #map {
             height: 100%;
         }
-        .leaflet-label-pane {
-            pointer-events: none;
-        } 
     </style>
 </head>
 
 <body>
-    <div id="map">
-	<script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
-	<script src="./NonTiledLayer.js"></script>
-	<script src="./NonTiledLayer.WMS.js"></script><script>
+    <div id="map" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
+    <script src="./NonTiledLayer.js"></script>
+    <script src="./NonTiledLayer.WMS.js"></script>
+    <script>
         // initialize leaflet
         var map = new L.Map('map');
 
-        // create a new pane which holds the layers which should always be rendered topmost
-        // also see: http://bl.ocks.org/rsudekum/5431771
-        var topmostPane = map._createPane('leaflet-label-pane', map.getPanes().markerPane);
-        
         // center Karlsruhe
         map.setView(new L.LatLng(49.01, 8.4), 16);
 
-        // using the xmap WMS servlet   
+        // using the xmap WMS servlet
         var xMapWmsUrl = 'http://80.146.239.180/WMS/WMS';
-        var xMapAttribution =  '<a href="http://www.ptvgroup.com">PTV<\/a>, HERE';
+        var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, HERE';
 
         // add (tiled) background layer
         var background = new L.TileLayer.WMS(xMapWmsUrl, {
@@ -60,18 +55,19 @@
             layers: 'xmap-ajaxfg-sandbox',
             format: 'image/png',
             transparent: true,
-            attribution: xMapAttribution
+            attribution: xMapAttribution,
+            pane: map.getPanes().tilePane,
+            zIndex: 1,
+            opacity: .8
         });
         map.addLayer(labels);
 
-        // add truck attributes. Insert at newly created topmostPane
         var ta = new L.NonTiledLayer.WMS(xMapWmsUrl, {
             opacity: 1.0,
             layers: 'xmap-truckattributes',
             format: 'image/png',
             transparent: true,
-            attribution: xMapAttribution,
-            pane: topmostPane
+            attribution: xMapAttribution
         });
         map.addLayer(ta);
 
@@ -81,8 +77,7 @@
             layers: 'OSM-Bushaltestellen',
             format: 'image/png',
             transparent: true,
-            attribution: 'terrestris',
-            pane: topmostPane
+            attribution: 'terrestris'
         });
         map.addLayer(busStops);
 
