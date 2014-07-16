@@ -7,7 +7,7 @@ Leaflet.NonTiledLayer.WMS is the implementation which makes WMS requests, simila
 
 You can see a sample here
 
-http://oliverheilig.github.io/Leaflet.NonTiledLayer/NonTiledDemo.html
+http://ptv-logistics.github.io/Leaflet.NonTiledLayer/NonTiledDemo.html
 
 It uses the WMS service of xMap-Server http://xserver.ptvgroup.com/en-uk/products/ptv-xserver/ptv-xmap/
 from PTV Group, which requires a tiled/non-tiled hybrid approach (and that is the reason i've built this).
