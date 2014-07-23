@@ -19,5 +19,6 @@ The supported options
 * opacity - the opacity value between 0.0 and 1.0; default = 1.0
 * pane - the pane where the child div is inserted; default: null (div inserted at overlayPane)
 * zIndex - z-index of the images
+* maxZoom - the maximum zoom level for which the overlay is requested
 
 The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels in http://80.146.239.139/SpatialTutorial/05-SymbolScaling.html

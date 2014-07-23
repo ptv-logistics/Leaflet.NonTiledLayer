@@ -7,11 +7,13 @@ L.NonTiledLayer = L.Class.extend({
         attribution: '',
         opacity: 1.0,
         pane: null,
-        zIndex: 0
+        zIndex: 0,
+        maxZoom: -99
     },
 
     // override this method in the inherited class
-    getImageUrl: function (world1, world2, width, height) { },
+    //getImageUrl: function (world1, world2, width, height) {},
+    //getImageUrlAsync: function (world1, world2, width, height, f) {},
 
     initialize: function (options) {
         this._currentImage = null;
@@ -165,6 +167,14 @@ L.NonTiledLayer = L.Class.extend({
     },
 
     _update: function () {
+        if (this._map.getZoom() < this.options.maxZoom) {
+            this._div.style.visibility='hidden';
+            return;
+        }
+        else {
+            this._div.style.visibility = 'visible';
+        }
+
         if (this._bufferImage)
             this._resetImage(this._bufferImage);
 
@@ -182,7 +192,7 @@ L.NonTiledLayer = L.Class.extend({
         if (width < 32 || height < 32)
             return;
 
-        var url = this.getImageUrl(bounds.getNorthWest(), bounds.getSouthEast(), width, height);
+
 
         this._currentImage = this._initImage();
 
@@ -190,7 +200,15 @@ L.NonTiledLayer = L.Class.extend({
 
         this._resetImage(this._currentImage);
 
-        this._currentImage.src = url;
+        var i = this._currentImage;
+        if (this.getImageUrl)
+            i.src = this.getImageUrl(bounds.getNorthWest(), bounds.getSouthEast(), width, height);
+        else
+            this.getImageUrlAsync(bounds.getNorthWest(), bounds.getSouthEast(), width, height, function (url, tag) {
+                i.src = url;
+                i.tag = tag;
+            });
+
 
         L.DomUtil.setOpacity(this._currentImage, 0);
     },
@@ -201,12 +219,15 @@ L.NonTiledLayer = L.Class.extend({
             return;
         }
 
+        if (this._addInteraction)
+            this._addInteraction(this._currentImage.tag)
+
+        L.DomUtil.setOpacity(this._currentImage, this.options.opacity);
+
         if (this._bufferImage)
             this._div.removeChild(this._bufferImage);
 
         this._bufferImage = this._currentImage;
-
-        L.DomUtil.setOpacity(this._currentImage, this.options.opacity);
 
         this.fire('load');
     },
