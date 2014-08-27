@@ -7,7 +7,7 @@ L.NonTiledLayer = L.Class.extend({
         attribution: '',
         opacity: 1.0,
         pane: null,
-        zIndex: 0,
+        zIndex: undefined,
         maxZoom: -99
     },
 
@@ -92,7 +92,8 @@ L.NonTiledLayer = L.Class.extend({
 
     _initImage: function () {
         var _image = L.DomUtil.create('img', 'leaflet-image-layer');
-        _image.style.zIndex = this.options.zIndex;
+        if(this.options.zIndex !== undefined )
+            _image.style.zIndex = this.options.zIndex;
         this._div.appendChild(_image);
 
         if (this._map.options.zoomAnimation && L.Browser.any3d) {
@@ -112,6 +113,13 @@ L.NonTiledLayer = L.Class.extend({
         });
 
         return _image;
+    },
+
+    redraw: function () {
+        if (this._map) {
+            this._update();
+        }
+        return this;
     },
 
     _animateZoom: function (e) {
@@ -191,8 +199,6 @@ L.NonTiledLayer = L.Class.extend({
         // resulting image is too small
         if (width < 32 || height < 32)
             return;
-
-
 
         this._currentImage = this._initImage();
 
