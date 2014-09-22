@@ -8,17 +8,16 @@ L.NonTiledLayer = L.Class.extend({
         opacity: 1.0,
         pane: null,
         zIndex: undefined,
-        maxZoom: -99
+        minZoom: -99
     },
+	url: '',
 
     // override this method in the inherited class
     //getImageUrl: function (world1, world2, width, height) {},
     //getImageUrlAsync: function (world1, world2, width, height, f) {},
 
     initialize: function (options) {
-        this._currentImage = null;
-        this._bufferImage = null;
-        L.setOptions(this, options);
+        L.setOptions(this, options);		
     },
 
     onAdd: function (map) {
@@ -32,8 +31,6 @@ L.NonTiledLayer = L.Class.extend({
         else
             this._pane = this._map.getPanes().overlayPane;
 
-        this._update();
-
         if (map.options.zoomAnimation && L.Browser.any3d) {
             map.on('zoomanim', this._animateZoom, this);
         }
@@ -41,10 +38,18 @@ L.NonTiledLayer = L.Class.extend({
         this._map.on('moveend', this._update, this);
 
         this._pane.appendChild(this._div);
+		
+		this._bufferImage = this._initImage();
+		this._currentImage = this._initImage();
+
+        this._update();
     },
 
     onRemove: function (map) {
         this._pane.removeChild(this._div);
+		
+		this._div.removeChild(this._bufferImage);
+        this._div.removeChild(this._currentImage);  
 
         this._map.off('moveend', this._update, this);
 
@@ -90,8 +95,9 @@ L.NonTiledLayer = L.Class.extend({
     },
 
 
-    _initImage: function () {
-        var _image = L.DomUtil.create('img', 'leaflet-image-layer');
+    _initImage: function (_image) {
+	    var _image = L.DomUtil.create('img', 'leaflet-image-layer');
+
         if(this.options.zIndex !== undefined )
             _image.style.zIndex = this.options.zIndex;
         this._div.appendChild(_image);
@@ -123,9 +129,9 @@ L.NonTiledLayer = L.Class.extend({
     },
 
     _animateZoom: function (e) {
-        if (this._currentImage)
+        if (this._currentImage._bounds)
             this._animateImage(this._currentImage, e);
-        if (this._bufferImage)
+        if (this._bufferImage._bounds)
             this._animateImage(this._bufferImage, e);
     },
 
@@ -175,16 +181,16 @@ L.NonTiledLayer = L.Class.extend({
     },
 
     _update: function () {
-        if (this._map.getZoom() < this.options.maxZoom) {
+        if (this._map.getZoom() < this.options.minZoom) {
             this._div.style.visibility='hidden';
             return;
         }
         else {
             this._div.style.visibility = 'visible';
         }
-
-        if (this._bufferImage)
-            this._resetImage(this._bufferImage);
+		
+		if(this._bufferImage._bounds)
+			this._resetImage(this._bufferImage);
 
         var bounds = this._getClippedBounds();
 
@@ -200,8 +206,6 @@ L.NonTiledLayer = L.Class.extend({
         if (width < 32 || height < 32)
             return;
 
-        this._currentImage = this._initImage();
-
         this._currentImage._bounds = bounds;
 
         this._resetImage(this._currentImage);
@@ -215,25 +219,25 @@ L.NonTiledLayer = L.Class.extend({
                 i.tag = tag;
             });
 
-
+		this.url = i.src;
+			
         L.DomUtil.setOpacity(this._currentImage, 0);
     },
 
     _onImageLoad: function (e) {
-        if (e.target != this._currentImage) { // obsolete image
-            this._div.removeChild(e.target);
+	  if (e.target.src != this.url) { // obsolete image
             return;
         }
-
+		
         if (this._addInteraction)
             this._addInteraction(this._currentImage.tag)
 
         L.DomUtil.setOpacity(this._currentImage, this.options.opacity);
+        L.DomUtil.setOpacity(this._bufferImage, 0);
 
-        if (this._bufferImage)
-            this._div.removeChild(this._bufferImage);
-
+		var tmp = this._bufferImage;
         this._bufferImage = this._currentImage;
+		this._currentImage = tmp;
 
         this.fire('load');
     },

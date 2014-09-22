@@ -1,5 +1,5 @@
 /*
- * L.NonTiledLayer.WMS is used for putting WMS tile layers on the map.
+ * L.NonTiledLayer.WMS is used for putting WMS non tiled layers on the map.
  */
 L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 
@@ -17,13 +17,13 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
         this._wmsUrl = url;
 
         var wmsParams = L.extend({}, this.defaultWmsParams);
-
-        for (var i in options) {
-            // all keys that are not TileLayer options go to WMS params
-            if (!this.options.hasOwnProperty(i)) {
-                wmsParams[i] = options[i];
-            }
-        }
+		
+		// all keys that are not NonTiledLayer options go to WMS params
+		for (var i in options) {
+			if (!L.NonTiledLayer.prototype.options.hasOwnProperty(i)) {
+				wmsParams[i] = options[i];
+			}
+		}
 
         this.wmsParams = wmsParams;
 
