@@ -9,7 +9,7 @@ L.NonTiledLayer = L.Class.extend({
         pane: null,
         zIndex: undefined,
         minZoom: 0,
-        maxZoom: 19
+        maxZoom: 18
     },
     key: '',
 
@@ -251,6 +251,7 @@ L.NonTiledLayer = L.Class.extend({
 
         L.DomUtil.setOpacity(this._currentImage, this.options.opacity);
         L.DomUtil.setOpacity(this._bufferImage, 0);
+        this._bufferImage.src = "";
 
         var tmp = this._bufferImage;
         this._bufferImage = this._currentImage;

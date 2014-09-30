@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+    <title>Leaflet NonTiledLayer Example</title>
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+    <link href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html,
+        body,
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
+    <script src="./NonTiledLayer.js"></script>
+    <script src="./NonTiledLayer.WMS.js"></script>
+    <script>
+        // initialize leaflet
+        var map = new L.Map('map');
+
+        // center Karlsruhe
+        map.setView(new L.LatLng(49.01, 8.4), 16);
+
+        // using the xmap WMS servlet
+        var xMapWmsUrl = 'http://80.146.239.180/WMS/WMS';
+        var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, HERE';
+
+        // add (tiled) background layer
+        var background = new L.TileLayer.WMS(xMapWmsUrl, {
+            maxZoom: 19,
+            minZoom: 0,
+            opacity: 1.0,
+            noWrap: true,
+            layers: 'xmap-ajaxbg-sandbox',
+            format: 'image/png',
+            transparent: false,
+            attribution: xMapAttribution
+        });
+        map.addLayer(background);
+
+        // add (non-tiled) label layer. Insert at tile pane
+        var labels = new L.NonTiledLayer.WMS(xMapWmsUrl, {
+            opacity: 1.0,
+            layers: 'xmap-ajaxfg-sandbox',
+            format: 'image/png',
+            transparent: true,
+            attribution: xMapAttribution,
+            pane: map.getPanes().tilePane,
+            zIndex: 50,
+            opacity: .8
+        });
+        map.addLayer(labels);
+
+        // add truck attributes. Default - insert at overlayPane
+        var ta = new L.NonTiledLayer.WMS(xMapWmsUrl, {
+            opacity: 1.0,
+            layers: 'xmap-truckattributes',
+            format: 'image/png',
+            transparent: true,
+            attribution: xMapAttribution
+        });
+        map.addLayer(ta);
+
+        // add bus stops. Default - insert at overlayPane
+        var busStops = new L.NonTiledLayer.WMS('http://ows.terrestris.de/osm-haltestellen', {
+            opacity: 1.0,
+            layers: 'OSM-Bushaltestellen',
+            format: 'image/png',
+            transparent: true,
+            attribution: 'terrestris'
+        });
+        map.addLayer(busStops);
+
+        // add layer selector
+        var overlays = {
+            "Background": background,
+            "Labels": labels,
+            "Truck Attributes": ta,
+            "Bus Stops": busStops
+        };
+        L.control.layers({}, overlays).addTo(map);
+    </script>
+</body>
+</html>
