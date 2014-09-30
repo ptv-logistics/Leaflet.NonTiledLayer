@@ -8,9 +8,10 @@ L.NonTiledLayer = L.Class.extend({
         opacity: 1.0,
         pane: null,
         zIndex: undefined,
-        minZoom: -99
+        minZoom: 0,
+        maxZoom: 19
     },
-    url: '',
+    key: '',
 
     // override this method in the inherited class
     //getImageUrl: function (world1, world2, width, height) {},
@@ -181,7 +182,11 @@ L.NonTiledLayer = L.Class.extend({
     },
 
     _update: function () {
-        if (this._map.getZoom() < this.options.minZoom) {
+        if (this.options.minZoom && this._map.getZoom() < this.options.minZoom) {
+            this._div.style.visibility = 'hidden';
+            return;
+        }
+        else if (this.options.maxZoom && this._map.getZoom() > this.options.maxZoom) {
             this._div.style.visibility = 'hidden';
             return;
         }
@@ -210,31 +215,36 @@ L.NonTiledLayer = L.Class.extend({
 
         this._resetImage(this._currentImage);
 
-        var key = bounds.getNorthWest() + '/' + bounds.getSouthEast() + '/' + +width + '/' + +height;
+        var oiua = this._onImageUrlAsync;
 
         var i = this._currentImage;
+        var key = bounds.getNorthWest() + '/' + bounds.getSouthEast() + '/' + +width + '/' + +height;
+        this.key = key;
+        i.key = key;
+
         if (this.getImageUrl) {
             i.src = this.getImageUrl(bounds.getNorthWest(), bounds.getSouthEast(), width, height);
-            i.key = key;
         }
-        else
+        else {
             this.getImageUrlAsync(bounds.getNorthWest(), bounds.getSouthEast(), width, height, key, function (k, url, tag) {
-                if (key == k) {
-                    i.src = url;
-                    i.tag = tag;
-                    i.key = key;
-                }
+                oiua(i, k, url, tag);
             });
-
-        this.key = key;
+        }
 
         L.DomUtil.setOpacity(this._currentImage, 0);
     },
 
-    _onImageLoad: function (e) {
-        if (e.target.key != this.key) { // obsolete image
-            return;
+    _onImageUrlAsync: function (i, k, url, tag) {
+        if (i.key == k) {
+            i.src = url;
+            i.tag = tag;
+            i.key = k;
         }
+    }, 
+
+    _onImageLoad: function (e) {
+        if (this.key != e.target.key)
+            return;
 
         if (this._addInteraction)
             this._addInteraction(this._currentImage.tag)
