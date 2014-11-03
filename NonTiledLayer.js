@@ -185,10 +185,14 @@ L.NonTiledLayer = L.Class.extend({
 
     _update: function () {
         if (this.options.minZoom && this._map.getZoom() < this.options.minZoom) {
-            this._div.style.visibility = 'hidden';
+            this._currentImage.src = L.Util.emptyImageUrl;
+            this._bufferImage.src = L.Util.emptyImageUrl;
+			this._div.style.visibility = 'hidden';
             return;
         }
         else if (this.options.maxZoom && this._map.getZoom() > this.options.maxZoom) {
+            this._currentImage.src = L.Util.emptyImageUrl;
+            this._bufferImage.src = L.Util.emptyImageUrl;
             this._div.style.visibility = 'hidden';
             return;
         }
@@ -240,12 +244,12 @@ L.NonTiledLayer = L.Class.extend({
     }, 
 
     _onImageLoad: function (e) {
+		if(e.target.src ==  L.Util.emptyImageUrl)
+			return;
+	
         if (this.key != e.target.key)
             return;
-			
-		if(this._div.style.visibility == 'hidden')
-			return;
-			
+						
         if (this._addInteraction)
             this._addInteraction(this._currentImage.tag)
 
