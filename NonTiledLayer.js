@@ -196,9 +196,6 @@ L.NonTiledLayer = L.Class.extend({
             this._div.style.visibility = 'visible';
         }
 
-        // if (this._bufferImage._bounds)
-            // this._resetImage(this._bufferImage);
-
         var bounds = this._getClippedBounds();
 
         // re-project to corresponding pixel bounds
@@ -245,6 +242,9 @@ L.NonTiledLayer = L.Class.extend({
     _onImageLoad: function (e) {
         if (this.key != e.target.key)
             return;
+			
+		if(this._div.style.visibility == 'hidden')
+			return;
 			
         if (this._addInteraction)
             this._addInteraction(this._currentImage.tag)

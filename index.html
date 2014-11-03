@@ -66,6 +66,8 @@
 
         // add truck attributes. Default - insert at overlayPane
         var ta = new L.NonTiledLayer.WMS(xMapWmsUrl, {
+            maxZoom: 19,
+            minZoom: 0,
             opacity: 1.0,
             layers: 'xmap-truckattributes',
             format: 'image/png',
@@ -76,6 +78,8 @@
 
         // add bus stops. Default - insert at overlayPane
         var busStops = new L.NonTiledLayer.WMS('http://ows.terrestris.de/osm-haltestellen', {
+            maxZoom: 19,
+            minZoom: 0,
             opacity: 1.0,
             layers: 'OSM-Bushaltestellen',
             format: 'image/png',
