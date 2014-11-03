@@ -130,7 +130,7 @@ L.NonTiledLayer = L.Class.extend({
     },
 
     _animateZoom: function (e) {
-        if (this._currentImage._bounds)
+	    if (this._currentImage._bounds)
             this._animateImage(this._currentImage, e);
         if (this._bufferImage._bounds)
             this._animateImage(this._bufferImage, e);
@@ -138,16 +138,18 @@ L.NonTiledLayer = L.Class.extend({
 
     _animateImage: function (image, e) {
         var map = this._map,
-		    scale = map.getZoomScale(e.zoom),
+		    scale = image._scale * map.getZoomScale(e.zoom),
 		    nw = image._bounds.getNorthWest(),
 		    se = image._bounds.getSouthEast(),
-
+			
 		    topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center),
 		    size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft),
 		    origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
 
         image.style[L.DomUtil.TRANSFORM] =
 		        L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
+		
+		image._scale = scale;
     },
 
     _resetImage: function (image) {
@@ -194,8 +196,8 @@ L.NonTiledLayer = L.Class.extend({
             this._div.style.visibility = 'visible';
         }
 
-        if (this._bufferImage._bounds)
-            this._resetImage(this._bufferImage);
+        // if (this._bufferImage._bounds)
+            // this._resetImage(this._bufferImage);
 
         var bounds = this._getClippedBounds();
 
@@ -212,7 +214,7 @@ L.NonTiledLayer = L.Class.extend({
             return;
 
         this._currentImage._bounds = bounds;
-
+		this._currentImage._scale = 1;
         this._resetImage(this._currentImage);
 
         var oiua = this._onImageUrlAsync;
@@ -230,8 +232,6 @@ L.NonTiledLayer = L.Class.extend({
                 oiua(i, k, url, tag);
             });
         }
-
-        L.DomUtil.setOpacity(this._currentImage, 0);
     },
 
     _onImageUrlAsync: function (i, k, url, tag) {
@@ -245,13 +245,13 @@ L.NonTiledLayer = L.Class.extend({
     _onImageLoad: function (e) {
         if (this.key != e.target.key)
             return;
-
+			
         if (this._addInteraction)
             this._addInteraction(this._currentImage.tag)
 
         L.DomUtil.setOpacity(this._currentImage, this.options.opacity);
         L.DomUtil.setOpacity(this._bufferImage, 0);
-        this._bufferImage.src = "";
+        this._bufferImage.src = L.Util.emptyImageUrl;
 
         var tmp = this._bufferImage;
         this._bufferImage = this._currentImage;

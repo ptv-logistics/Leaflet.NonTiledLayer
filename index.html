@@ -51,6 +51,8 @@
 
         // add (non-tiled) label layer. Insert at tile pane
         var labels = new L.NonTiledLayer.WMS(xMapWmsUrl, {
+            maxZoom: 19,
+            minZoom: 0,
             opacity: 1.0,
             layers: 'xmap-ajaxfg-sandbox',
             format: 'image/png',
