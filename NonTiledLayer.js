@@ -184,22 +184,20 @@ L.NonTiledLayer = L.Class.extend({
     },
 
     _update: function () {	
-        if (this.options.minZoom && this._map.getZoom() < this.options.minZoom) {
+        if ((this.options.minZoom && this._map.getZoom() < this.options.minZoom) ||
+		(this.options.maxZoom && this._map.getZoom() > this.options.maxZoom)) {
             this._currentImage.src = L.Util.emptyImageUrl;
             this._bufferImage.src = L.Util.emptyImageUrl;
 			this._div.style.visibility = 'hidden';
+			
+			if (this._addInteraction) 
+               this._addInteraction(null);			 
+			   
             return;
-        }
-        else if (this.options.maxZoom && this._map.getZoom() > this.options.maxZoom) {
-            this._currentImage.src = L.Util.emptyImageUrl;
-            this._bufferImage.src = L.Util.emptyImageUrl;
-            this._div.style.visibility = 'hidden';
-            return;
-        }
-        else {
-            this._div.style.visibility = 'visible';
         }
 
+        this._div.style.visibility = 'visible';
+    
         var bounds = this._getClippedBounds();
 
         // re-project to corresponding pixel bounds
