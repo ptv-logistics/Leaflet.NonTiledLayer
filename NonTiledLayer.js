@@ -96,7 +96,7 @@ L.NonTiledLayer = L.Class.extend({
     },
 
 
-    _initImage: function (_image) {
+    _initImage: function () {
         var _image = L.DomUtil.create('img', 'leaflet-image-layer');
 
         if (this.options.zIndex !== undefined)
@@ -255,7 +255,7 @@ L.NonTiledLayer = L.Class.extend({
             return;
 						
         if (this._addInteraction)
-            this._addInteraction(this._currentImage.tag)
+            this._addInteraction(this._currentImage.tag);
 
         L.DomUtil.setOpacity(this._currentImage, this.options.opacity);
         L.DomUtil.setOpacity(this._bufferImage, 0);
