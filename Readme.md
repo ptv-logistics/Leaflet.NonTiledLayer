@@ -15,11 +15,11 @@ The sample also displays an OSM WMS overlay which also cannot be requested in ti
 
 The supported options
 
-* attribution - the attribution text for the layer data
-* opacity - the opacity value between 0.0 and 1.0; default = 1.0
-* pane - the pane where the child div is inserted; default: null (div inserted at overlayPane)
-* zIndex - z-index of the images
-* minZoom - the minimum zoom level for which the overlay is requested
-* maxZoom - the maximum zoom level for which the overlay is requested
+* *attribution* - the attribution text for the layer data
+* *opacity* - the opacity value between 0.0 and 1.0; default = 1.0
+* *minZoom* - the minimum zoom level for which the overlay is requested
+* *maxZoom* - the maximum zoom level for which the overlay is requested
+* *zIndex* - z-index of the images
+* *pane* - the pane where the child div is inserted; default: undefined (div inserted at overlayPane). The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels in http://80.146.239.139/SpatialTutorial/05-SymbolScaling.html
 
-The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels in http://80.146.239.139/SpatialTutorial/05-SymbolScaling.html
+
