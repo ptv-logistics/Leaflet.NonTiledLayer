@@ -24,4 +24,4 @@ The supported options
 
 The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels in http://80.146.239.139/SpatialTutorial/05-SymbolScaling.html
 
-You can implement your own NonTiledLayer by inheriting from NonTiledLayer and implementing either the function getImageUrl or getImageUrlAsync. The getImageUrl just returns an uri and is used by the WMS implementation. The getImageUrlAsync can be used for services that not only return images, but also additional context information for interaction. The project https://github.com/ptv-logistics/Leaflet.PtvLayer uses this method.-
+You can implement your own NonTiledLayer by inheriting from NonTiledLayer and implementing either the function getImageUrl or getImageUrlAsync. The getImageUrl just returns an uri and is used by the WMS implementation. The getImageUrlAsync can be used for services that not only return images, but also additional context information for interaction. The project https://github.com/ptv-logistics/Leaflet.PtvLayer uses this method.
