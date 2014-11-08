@@ -20,6 +20,8 @@ The supported options
 * *minZoom* - the minimum zoom level for which the overlay is requested
 * *maxZoom* - the maximum zoom level for which the overlay is requested
 * *zIndex* - z-index of the images
-* *pane* - the pane where the child div is inserted; default: undefined (div inserted at overlayPane). The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels in http://80.146.239.139/SpatialTutorial/05-SymbolScaling.html
+* *pane* - the pane where the child div is inserted; default: undefined (div inserted at overlayPane). 
 
+The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels in http://80.146.239.139/SpatialTutorial/05-SymbolScaling.html
 
+You can implement your own NonTiledLayer by inheriting from NonTiledLayer and implementing either the function getImageUrl or getImageUrlAsync. The getImageUrl just returns an uri and is used by the WMS implementation. The getImageUrlAsync can be used for services that not only return images, but also additional context information for interaction. The project https://github.com/ptv-logistics/Leaflet.PtvLayer uses this method.-
