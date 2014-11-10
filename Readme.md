@@ -5,7 +5,7 @@ Not all imagery providers can handle tiles properly, for example if they render 
 So i've added a Leaflet.NonTiledLayer which gets the imagery for the complete map viewport whenever it changes.
 Leaflet.NonTiledLayer.WMS is the implementation that makes WMS requests, similar to the TileLayer.WMS.
 
-You can see a demo here
+You can see a demo here:
 
 http://ptv-logistics.github.io/Leaflet.NonTiledLayer
 
