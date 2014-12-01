@@ -249,9 +249,9 @@ L.NonTiledLayer = L.Class.extend({
 		if(e.target.src ==  L.Util.emptyImageUrl)
 			return;
 	
-        if (this.key != e.target.key)
+		if (this.key != e.target.key || e.target != this._currentImage)
             return;
-						
+
         if (this._addInteraction)
             this._addInteraction(this._currentImage.tag);
 
