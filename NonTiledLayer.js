@@ -153,6 +153,9 @@ L.NonTiledLayer = L.Class.extend({
     },
 
     _resetImage: function (image) {
+        if (!image._bounds)
+            return;
+
         var bounds = new L.Bounds(
 		        this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
 		        this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
@@ -183,7 +186,7 @@ L.NonTiledLayer = L.Class.extend({
         return new L.LatLngBounds(world1, world2);
     },
 
-    _update: function () {	
+    _update: function () {
         if ((this.options.minZoom && this._map.getZoom() < this.options.minZoom) ||
 		(this.options.maxZoom && this._map.getZoom() > this.options.maxZoom)) {
             this._currentImage.src = L.Util.emptyImageUrl;
@@ -212,14 +215,17 @@ L.NonTiledLayer = L.Class.extend({
         if (width < 32 || height < 32)
             return;
 
-		// set scales for zoom animation
+        // if no transition -> reset view
+        if (this._bufferImage._lastScale == 1) {
+            this._resetImage(this._bufferImage);
+        }
+
+        // set scales for zoom animation
 		this._bufferImage._scale = this._bufferImage._lastScale;
-		this._currentImage._scale = 1;
-		this._currentImage._lastScale = 1;
+		this._currentImage._scale = this._currentImage._lastScale = 1;
 
-        this._currentImage._bounds = bounds;
+		this._currentImage._bounds = bounds;
         this._resetImage(this._currentImage);
-
         var oiua = this._onImageUrlAsync;
 
         var i = this._currentImage;
@@ -249,9 +255,9 @@ L.NonTiledLayer = L.Class.extend({
 		if(e.target.src ==  L.Util.emptyImageUrl)
 			return;
 	
-		if (this.key != e.target.key || e.target != this._currentImage)
+        if (this.key != e.target.key)
             return;
-
+						
         if (this._addInteraction)
             this._addInteraction(this._currentImage.tag);
 
