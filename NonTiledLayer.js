@@ -1,282 +1,301 @@
-﻿/*
+/*
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
  */
+
 L.NonTiledLayer = L.Class.extend({
-    includes: L.Mixin.Events,
-    options: {
-        attribution: '',
-        opacity: 1.0,
-        pane: null,
-        zIndex: undefined,
-        minZoom: 0,
-        maxZoom: 18
-    },
-    key: '',
 
-    // override this method in the inherited class
-    //getImageUrl: function (world1, world2, width, height) {},
-    //getImageUrlAsync: function (world1, world2, width, height, key, f) {},
+	includes: L.Mixin.Events,
 
-    initialize: function (options) {
-        L.setOptions(this, options);
-    },
+	options: {
+		attribution: '',
+		opacity: 1.0,
+		pane: null,
+		zIndex: undefined,
+		minZoom: 0,
+		maxZoom: 18
+	},
 
-    onAdd: function (map) {
-        this._map = map;
+	key: '',
 
-        if (!this._div)
-            this._div = L.DomUtil.create('div', 'leaflet-image-layer');
+	// override this method in the inherited class
+	//	getImageUrl: function (world1, world2, width, height) {},
+	//	getImageUrlAsync: function (world1, world2, width, height, key, f) {},
 
-        if (this.options.pane)
-            this._pane = this.options.pane;
-        else
-            this._pane = this._map.getPanes().overlayPane;
+	initialize: function (options) { // (Object)
+		L.setOptions(this, options);
+	},
 
-        if (map.options.zoomAnimation && L.Browser.any3d) {
-            map.on('zoomanim', this._animateZoom, this);
-        }
+	onAdd: function (map) {
+		this._map = map;
 
-        this._map.on('moveend', this._update, this);
+		if (!this._div) {
+			this._div = L.DomUtil.create('div', 'leaflet-image-layer');
+		}
 
-        this._pane.appendChild(this._div);
+		if (this.options.pane) {
+			this._pane = this.options.pane;
+		}
+		else {
+			this._pane = this._map.getPanes().overlayPane;
+		}
 
-        this._bufferImage = this._initImage();
-        this._currentImage = this._initImage();
+		if (map.options.zoomAnimation && L.Browser.any3d) {
+			map.on('zoomanim', this._animateZoom, this);
+		}
 
-        this._update();
-    },
+		this._map.on('moveend', this._update, this);
 
-    onRemove: function (map) {
-        this._pane.removeChild(this._div);
+		this._pane.appendChild(this._div);
 
-        this._div.removeChild(this._bufferImage);
-        this._div.removeChild(this._currentImage);
+		this._bufferImage = this._initImage();
+		this._currentImage = this._initImage();
 
-        this._map.off('moveend', this._update, this);
+		this._update();
+	},
 
-        if (map.options.zoomAnimation) {
-            map.off('zoomanim', this._animateZoom, this);
-        }
-    },
+	onRemove: function (map) {
+		this._pane.removeChild(this._div);
 
-    addTo: function (map) {
-        map.addLayer(this);
-        return this;
-    },
+		this._div.removeChild(this._bufferImage);
+		this._div.removeChild(this._currentImage);
 
-    setOpacity: function (opacity) {
-        this.options.opacity = opacity;
+		this._map.off('moveend', this._update, this);
 
-        if (this._currentImage)
-            this._updateOpacity(this._currentImage);
-        if (this._bufferImage)
-            this._updateOpacity(this._bufferImage);
+		if (map.options.zoomAnimation) {
+			map.off('zoomanim', this._animateZoom, this);
+		}
+	},
 
-        return this;
-    },
+	addTo: function (map) {
+		map.addLayer(this);
+		return this;
+	},
 
-    // TODO remove bringToFront/bringToBack duplication from TileLayer/Path
-    bringToFront: function () {
-        if (this._div) {
-            this._pane.appendChild(this._div);
-        }
-        return this;
-    },
+	setOpacity: function (opacity) {
+		this.options.opacity = opacity;
 
-    bringToBack: function () {
-        if (this._div) {
-            this._pane.insertBefore(this._div, this._pane.firstChild);
-        }
-        return this;
-    },
+		if (this._currentImage) {
+			this._updateOpacity(this._currentImage);
+		}
 
+		if (this._bufferImage) {
+			this._updateOpacity(this._bufferImage);
+		}
 
-    getAttribution: function () {
-        return this.options.attribution;
-    },
+		return this;
+	},
 
+	// TODO remove bringToFront/bringToBack duplication from TileLayer/Path
+	bringToFront: function () {
+		if (this._div) {
+			this._pane.appendChild(this._div);
+		}
+		return this;
+	},
 
-    _initImage: function () {
-        var _image = L.DomUtil.create('img', 'leaflet-image-layer');
+	bringToBack: function () {
+		if (this._div) {
+			this._pane.insertBefore(this._div, this._pane.firstChild);
+		}
+		return this;
+	},
 
-        if (this.options.zIndex !== undefined)
-            _image.style.zIndex = this.options.zIndex;
-        this._div.appendChild(_image);
+	getAttribution: function () {
+		return this.options.attribution;
+	},
 
-        if (this._map.options.zoomAnimation && L.Browser.any3d) {
-            L.DomUtil.addClass(_image, 'leaflet-zoom-animated');
-        } else {
-            L.DomUtil.addClass(_image, 'leaflet-zoom-hide');
-        }
+	_initImage: function () {
+		var _image = L.DomUtil.create('img', 'leaflet-image-layer');
 
-        this._updateOpacity(_image);
+		if (this.options.zIndex !== undefined) {
+			_image.style.zIndex = this.options.zIndex;
+		}
 
-        //TODO createImage util method to remove duplication
-        L.extend(_image, {
-            galleryimg: 'no',
-            onselectstart: L.Util.falseFn,
-            onmousemove: L.Util.falseFn,
-            onload: L.bind(this._onImageLoad, this)
-        });
+		this._div.appendChild(_image);
 
-        return _image;
-    },
+		if (this._map.options.zoomAnimation && L.Browser.any3d) {
+			L.DomUtil.addClass(_image, 'leaflet-zoom-animated');
+		} else {
+			L.DomUtil.addClass(_image, 'leaflet-zoom-hide');
+		}
 
-    redraw: function () {
-        if (this._map) {
-            this._update();
-        }
-        return this;
-    },
+		this._updateOpacity(_image);
 
-    _animateZoom: function (e) {
-	    if (this._currentImage._bounds)
-            this._animateImage(this._currentImage, e);
-        if (this._bufferImage._bounds)
-            this._animateImage(this._bufferImage, e);
-    },
+		//TODO createImage util method to remove duplication
+		L.extend(_image, {
+			galleryimg: 'no',
+			onselectstart: L.Util.falseFn,
+			onmousemove: L.Util.falseFn,
+			onload: L.bind(this._onImageLoad, this)
+		});
 
-    _animateImage: function (image, e) {
-        var map = this._map,
-		    scale = image._scale * map.getZoomScale(e.zoom),
-		    nw = image._bounds.getNorthWest(),
-		    se = image._bounds.getSouthEast(),
-			
-		    topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center),
-		    size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft),
-		    origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
+		return _image;
+	},
 
-        image.style[L.DomUtil.TRANSFORM] =
-		        L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
-				
+	redraw: function () {
+		if (this._map) {
+			this._update();
+		}
+		return this;
+	},
+
+	_animateZoom: function (e) {
+		if (this._currentImage._bounds) {
+			this._animateImage(this._currentImage, e);
+		}
+
+		if (this._bufferImage._bounds) {
+			this._animateImage(this._bufferImage, e);
+		}
+	},
+
+	_animateImage: function (image, e) {
+		var map = this._map,
+			scale = image._scale * map.getZoomScale(e.zoom),
+			nw = image._bounds.getNorthWest(),
+			se = image._bounds.getSouthEast(),
+
+			topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center),
+			size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft),
+			origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
+
+		image.style[L.DomUtil.TRANSFORM] =
+				L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
+
 		image._lastScale = scale;
-    },
+	},
 
-    _resetImage: function (image) {
-        if (!image._bounds)
-            return;
+	_resetImage: function (image) {
+		if (!image._bounds) {
+			return;
+		}
 
-        var bounds = new L.Bounds(
-		        this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
-		        this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
-		    size = bounds.getSize();
+		var bounds = new L.Bounds(
+				this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
+				this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
+			size = bounds.getSize();
 
-        L.DomUtil.setPosition(image, bounds.min);
+		L.DomUtil.setPosition(image, bounds.min);
 
-        image.style.width = size.x + 'px';
-        image.style.height = size.y + 'px';
-    },
+		image.style.width = size.x + 'px';
+		image.style.height = size.y + 'px';
+	},
 
-    _getClippedBounds: function () {
-        var wgsBounds = this._map.getBounds();
+	_getClippedBounds: function () {
+		var wgsBounds = this._map.getBounds();
 
-        // truncate bounds to valid wgs bounds
-        var lon1 = wgsBounds.getNorthWest().lng;
-        var lat1 = wgsBounds.getNorthWest().lat;
-        var lon2 = wgsBounds.getSouthEast().lng;
-        var lat2 = wgsBounds.getSouthEast().lat;
-        lon1 = (lon1 + 180) % 360 - 180;
-        if (lat1 > 85.05) lat1 = 85.05;
-        if (lat2 < -85.05) lat2 = -85.05;
-        if (lon1 < -180) lon1 = -180;
-        if (lon2 > 180) lon2 = 180;
-        var world1 = new L.LatLng(lat1, lon1);
-        var world2 = new L.LatLng(lat2, lon2);
+		// truncate bounds to valid wgs bounds
+		var lon1 = wgsBounds.getNorthWest().lng;
+		var lat1 = wgsBounds.getNorthWest().lat;
+		var lon2 = wgsBounds.getSouthEast().lng;
+		var lat2 = wgsBounds.getSouthEast().lat;
+		lon1 = (lon1 + 180) % 360 - 180;
+		if (lat1 > 85.05) { lat1 = 85.05; }
+		if (lat2 < -85.05) { lat2 = -85.05; }
+		if (lon1 < -180) { lon1 = -180; }
+		if (lon2 > 180) { lon2 = 180; }
+		var world1 = new L.LatLng(lat1, lon1);
+		var world2 = new L.LatLng(lat2, lon2);
 
-        return new L.LatLngBounds(world1, world2);
-    },
+		return new L.LatLngBounds(world1, world2);
+	},
 
-    _update: function () {
-        if ((this.options.minZoom && this._map.getZoom() < this.options.minZoom) ||
+	_update: function () {
+		if ((this.options.minZoom && this._map.getZoom() < this.options.minZoom) ||
 		(this.options.maxZoom && this._map.getZoom() > this.options.maxZoom)) {
-            this._currentImage.src = L.Util.emptyImageUrl;
-            this._bufferImage.src = L.Util.emptyImageUrl;
+			this._currentImage.src = L.Util.emptyImageUrl;
+			this._bufferImage.src = L.Util.emptyImageUrl;
 			this._div.style.visibility = 'hidden';
-			
-			if (this._addInteraction) 
-               this._addInteraction(null);			 
-			   
-            return;
-        }
 
-        this._div.style.visibility = 'visible';
-    
-        var bounds = this._getClippedBounds();
+			if (this._addInteraction) {
+				this._addInteraction(null);
+			}
 
-        // re-project to corresponding pixel bounds
-        var pix1 = this._map.latLngToContainerPoint(bounds.getNorthWest());
-        var pix2 = this._map.latLngToContainerPoint(bounds.getSouthEast());
+			return;
+		}
 
-        // get pixel size
-        var width = pix2.x - pix1.x;
-        var height = pix2.y - pix1.y;
+		this._div.style.visibility = 'visible';
 
-        // resulting image is too small
-        if (width < 32 || height < 32)
-            return;
+		var bounds = this._getClippedBounds();
 
-        // if no transition -> reset view
-        if (this._bufferImage._lastScale == 1) {
-            this._resetImage(this._bufferImage);
-        }
+		// re-project to corresponding pixel bounds
+		var pix1 = this._map.latLngToContainerPoint(bounds.getNorthWest());
+		var pix2 = this._map.latLngToContainerPoint(bounds.getSouthEast());
 
-        // set scales for zoom animation
+		// get pixel size
+		var width = pix2.x - pix1.x;
+		var height = pix2.y - pix1.y;
+
+		// resulting image is too small
+		if (width < 32 || height < 32) {
+			return;
+		}
+
+		// if no transition -> reset view
+		if (this._bufferImage._lastScale === 1) {
+			this._resetImage(this._bufferImage);
+		}
+
+		// set scales for zoom animation
 		this._bufferImage._scale = this._bufferImage._lastScale;
 		this._currentImage._scale = this._currentImage._lastScale = 1;
 
 		this._currentImage._bounds = bounds;
-        this._resetImage(this._currentImage);
-        var oiua = this._onImageUrlAsync;
+		this._resetImage(this._currentImage);
+		var oiua = this._onImageUrlAsync;
 
-        var i = this._currentImage;
-        var key = bounds.getNorthWest() + '/' + bounds.getSouthEast() + '/' + +width + '/' + +height;
-        this.key = key;
-        i.key = key;
+		var i = this._currentImage;
+		var key = bounds.getNorthWest() + '/' + bounds.getSouthEast() + '/' + +width + '/' + +height;
+		this.key = key;
+		i.key = key;
 
-        if (this.getImageUrl) {
-            i.src = this.getImageUrl(bounds.getNorthWest(), bounds.getSouthEast(), width, height);
-        }
-        else {
-            this.getImageUrlAsync(bounds.getNorthWest(), bounds.getSouthEast(), width, height, key, function (k, url, tag) {
-                oiua(i, k, url, tag);
-            });
-        }
-    },
+		if (this.getImageUrl) {
+			i.src = this.getImageUrl(bounds.getNorthWest(), bounds.getSouthEast(), width, height);
+		}
+		else {
+			this.getImageUrlAsync(bounds.getNorthWest(), bounds.getSouthEast(), width, height, key, function (k, url, tag) {
+				oiua(i, k, url, tag);
+			});
+		}
+	},
 
-    _onImageUrlAsync: function (i, k, url, tag) {
-        if (i.key == k) {
-            i.src = url;
-            i.tag = tag;
-            i.key = k;
-        }
-    }, 
+	_onImageUrlAsync: function (i, k, url, tag) {
+		if (i.key === k) {
+			i.src = url;
+			i.tag = tag;
+			i.key = k;
+		}
+	},
 
-    _onImageLoad: function (e) {
-		if(e.target.src ==  L.Util.emptyImageUrl)
+	_onImageLoad: function (e) {
+		if (e.target.src === L.Util.emptyImageUrl) {
 			return;
-	
-        if (this.key != e.target.key)
-            return;
-						
-        if (this._addInteraction)
-            this._addInteraction(this._currentImage.tag);
+		}
 
-        L.DomUtil.setOpacity(this._currentImage, this.options.opacity);
-        L.DomUtil.setOpacity(this._bufferImage, 0);
-        this._bufferImage.src = L.Util.emptyImageUrl;
+		if (this.key !== e.target.key) {
+			return;
+		}
 
-        var tmp = this._bufferImage;
-        this._bufferImage = this._currentImage;
-        this._currentImage = tmp;
+		if (this._addInteraction) {
+			this._addInteraction(this._currentImage.tag);
+		}
 
-        this.fire('load');
-    },
+		L.DomUtil.setOpacity(this._currentImage, this.options.opacity);
+		L.DomUtil.setOpacity(this._bufferImage, 0);
+		this._bufferImage.src = L.Util.emptyImageUrl;
 
-    _updateOpacity: function (image) {
-        L.DomUtil.setOpacity(image, this.options.opacity);
-    }
+		var tmp = this._bufferImage;
+		this._bufferImage = this._currentImage;
+		this._currentImage = tmp;
+
+		this.fire('load');
+	},
+
+	_updateOpacity: function (image) {
+		L.DomUtil.setOpacity(image, this.options.opacity);
+	}
 });
 
 L.nonTiledLayer = function () {
-    return new L.NonTiledLayer();
+	return new L.NonTiledLayer();
 };

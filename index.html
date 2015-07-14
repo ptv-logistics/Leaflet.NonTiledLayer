@@ -59,7 +59,7 @@
             transparent: true,
             attribution: xMapAttribution,
             pane: map.getPanes().tilePane,
-            zIndex: 50,
+            zIndex: 50
         });
         map.addLayer(labels);
 
@@ -89,10 +89,10 @@
 
         // add layer selector
         var overlays = {
-            "Background": background,
-            "Labels": labels,
-            "Truck Attributes": ta,
-            "Bus Stops": busStops
+            'Background': background,
+            'Labels': labels,
+            'Truck Attributes': ta,
+            'Bus Stops': busStops
         };
         L.control.layers({}, overlays).addTo(map);
     </script>
