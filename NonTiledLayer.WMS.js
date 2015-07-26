@@ -1,24 +1,23 @@
 /*
- * L.NonTiledLayer.WMS is used for putting WMS non-tiled layers on the map.
+ * L.NonTiledLayer.WMS is used for putting WMS non tiled layers on the map.
  */
-
 L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 
-	defaultWmsParams: {
-		service: 'WMS',
-		request: 'GetMap',
-		version: '1.1.1',
-		layers: '',
-		styles: '',
-		format: 'image/jpeg',
-		transparent: false
-	},
+    defaultWmsParams: {
+        service: 'WMS',
+        request: 'GetMap',
+        version: '1.1.1',
+        layers: '',
+        styles: '',
+        format: 'image/jpeg',
+        transparent: false
+    },
 
-	initialize: function (url, options) { // (String, Object)
-		this._wmsUrl = url;
+    initialize: function (url, options) { // (String, Object)
+        this._wmsUrl = url;
 
-		var wmsParams = L.extend({}, this.defaultWmsParams);
-
+        var wmsParams = L.extend({}, this.defaultWmsParams);
+		
 		// all keys that are not NonTiledLayer options go to WMS params
 		for (var i in options) {
 			if (!L.NonTiledLayer.prototype.options.hasOwnProperty(i)) {
@@ -26,44 +25,44 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 			}
 		}
 
-		this.wmsParams = wmsParams;
+        this.wmsParams = wmsParams;
 
-		L.setOptions(this, options);
-	},
+        L.setOptions(this, options);
+    },
 
-	onAdd: function (map) {
-		var projectionKey = parseFloat(this.wmsParams.version) >= 1.3 ? 'crs' : 'srs';
-		this.wmsParams[projectionKey] = map.options.crs.code;
+    onAdd: function (map) {
+        var projectionKey = parseFloat(this.wmsParams.version) >= 1.3 ? 'crs' : 'srs';
+        this.wmsParams[projectionKey] = map.options.crs.code;
 
-		L.NonTiledLayer.prototype.onAdd.call(this, map);
-	},
+        L.NonTiledLayer.prototype.onAdd.call(this, map);
+    },
 
-	getImageUrl: function (world1, world2, width, height) {
-		var wmsParams = this.wmsParams;
-		wmsParams.width = width;
-		wmsParams.height = height;
+    getImageUrl: function (world1, world2, width, height) {
+        var wmsParams = this.wmsParams;
+        wmsParams.width = width;
+        wmsParams.height = height;
 
-		var crs = this._map.options.crs;
+        var crs = this._map.options.crs;
 
-		var p1 = crs.project(world1);
-		var p2 = crs.project(world2);
+        var p1 = crs.project(world1);
+        var p2 = crs.project(world2);
 
-		var url = this._wmsUrl + L.Util.getParamString(wmsParams, this._wmsUrl) + '&bbox=' + p1.x + ',' + p2.y + ',' + p2.x + ',' + p1.y;
-		return url;
-	},
+        var url = this._wmsUrl + L.Util.getParamString(wmsParams, this._wmsUrl) + '&bbox=' + p1.x + ',' + p2.y + ',' + p2.x + ',' + p1.y;
+        return url;
+    },
 
-	setParams: function (params, noRedraw) {
+    setParams: function (params, noRedraw) {
 
-		L.extend(this.wmsParams, params);
+        L.extend(this.wmsParams, params);
 
-		if (!noRedraw) {
-			this.redraw();
-		}
+        if (!noRedraw) {
+            this.redraw();
+        }
 
-		return this;
-	}
+        return this;
+    }
 });
 
 L.nonTiledLayer.wms = function (url, options) {
-	return new L.NonTiledLayer.WMS(url, options);
+    return new L.NonTiledLayer.WMS(url, options);
 };
