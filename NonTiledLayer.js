@@ -6,7 +6,6 @@ L.NonTiledLayer = L.Layer.extend({
     options: {
         attribution: '',
         opacity: 1.0,
-        pane: null,
         zIndex: undefined,
         minZoom: -99
     },
@@ -26,12 +25,7 @@ L.NonTiledLayer = L.Layer.extend({
         if (!this._div)
             this._div = L.DomUtil.create('div', 'leaflet-image-layer');
 
-        if (this.options.pane)
-            this._pane = this.options.pane;
-        else
-            this._pane = this._map.getPanes().overlayPane;
-
-        this._pane.appendChild(this._div);
+		this.getPane().appendChild(this._div);
 
         this._bufferImage = this._initImage();
         this._currentImage = this._initImage();
@@ -40,7 +34,7 @@ L.NonTiledLayer = L.Layer.extend({
     },
 
     onRemove: function (map) {
-        this._pane.removeChild(this._div);
+        this.getPane().removeChild(this._div);
 
         this._div.removeChild(this._bufferImage);
         this._div.removeChild(this._currentImage);
@@ -193,10 +187,7 @@ L.NonTiledLayer = L.Layer.extend({
             this._resetImage(this._bufferImage);
     },
 
-    ixxx: 0,
     _update: function () {
-        console.log(this.ixxx++);
-
         this._viewreset();
 
         var bounds = this._getClippedBounds();
