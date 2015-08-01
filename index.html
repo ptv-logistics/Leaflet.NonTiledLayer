@@ -6,7 +6,6 @@
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.css" />
-    <script src="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.js"></script>
     <style>
         body {
             padding: 0;
@@ -30,12 +29,12 @@
         // initialize leaflet
         var map = new L.Map('map');
 
-        // center Karlsruhe
-        map.setView(new L.LatLng(49.01, 8.4), 16);
+        // center Karlsruhe - setting fractional zoom
+        map.setView(new L.LatLng(49.01, 8.4), 15.5);
 
-        // using the xmap WMS servlet
+        // using the xMapServer WMS adapter
         var xMapWmsUrl = 'http://80.146.239.180/WMS/WMS';
-        var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, HERE';
+        var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, TOMTOM';
 
         // add (tiled) background layer
         var background = new L.TileLayer.WMS(xMapWmsUrl, {
