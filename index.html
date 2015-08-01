@@ -67,6 +67,7 @@
         var ta = new L.NonTiledLayer.WMS(xMapWmsUrl, {
             maxZoom: 19,
             minZoom: 13,
+            zIndex: 1, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
             opacity: 1.0,
             layers: 'xmap-truckattributes',
             format: 'image/png',
@@ -79,6 +80,7 @@
         var busStops = new L.NonTiledLayer.WMS('http://ows.terrestris.de/osm-haltestellen', {
             maxZoom: 19,
             minZoom: 14,
+            zIndex: 2, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
             opacity: 1.0,
             layers: 'OSM-Bushaltestellen',
             format: 'image/png',
