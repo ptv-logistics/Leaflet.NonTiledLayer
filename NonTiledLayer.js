@@ -7,7 +7,8 @@ L.NonTiledLayer = L.Layer.extend({
         attribution: '',
         opacity: 1.0,
         zIndex: undefined,
-        minZoom: -99
+        minZoom: -99,
+        pointerEvents: null
     },
     url: '',
 
@@ -22,10 +23,14 @@ L.NonTiledLayer = L.Layer.extend({
     onAdd: function (map) {
         this._map = map;
 
-        if (!this._div)
+        if (!this._div) {
             this._div = L.DomUtil.create('div', 'leaflet-image-layer');
+            if (this.options.pointerEvents) {
+                this._div.style['pointer-events'] = this.options.pointerEvents;
+            }
+        }
 
-		this.getPane().appendChild(this._div);
+        this.getPane().appendChild(this._div);
 
         this._bufferImage = this._initImage();
         this._currentImage = this._initImage();
