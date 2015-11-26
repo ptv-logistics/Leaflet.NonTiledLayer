@@ -140,13 +140,11 @@ L.NonTiledLayer = L.Layer.extend({
     },
 
     _animateImage: function (image, e) {
-        var map = this._map,
-		    scale = map.getZoomScale(e.zoom),
-		    nw = image._bounds.getNorthWest(),
-		    offset = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
+		var scale = this._map.getZoomScale(e.zoom),
+		    offset = this._map._latLngToNewLayerPoint(image._bounds.getNorthWest(), e.zoom, e.center);
 
-        L.DomUtil.setTransform(image, offset, scale);
-    },
+		L.DomUtil.setTransform(image, offset, scale);
+	},
 
     _resetImage: function (image) {
         var bounds = new L.Bounds(
@@ -190,6 +188,8 @@ L.NonTiledLayer = L.Layer.extend({
 
         if (this._bufferImage._bounds)
             this._resetImage(this._bufferImage);
+        if (this._currentImage._bounds)
+            this._resetImage(this._currentImage);
     },
 
     _update: function () {
