@@ -7,7 +7,8 @@ L.NonTiledLayer = L.Layer.extend({
         attribution: '',
         opacity: 1.0,
         zIndex: undefined,
-        minZoom: -99,
+        minZoom: 0,
+		maxZoom: 18,
         pointerEvents: null
     },
     url: '',
@@ -52,8 +53,7 @@ L.NonTiledLayer = L.Layer.extend({
 
     getEvents: function () {
         var events = {
-            moveend: this._update,
-            zoom: this._viewreset
+            moveend: this._update
         };
 
         if (this._zoomAnimated) {
@@ -93,11 +93,9 @@ L.NonTiledLayer = L.Layer.extend({
         return this;
     },
 
-
     getAttribution: function () {
         return this.options.attribution;
     },
-
 
     _initImage: function (_image) {
         var _image = L.DomUtil.create('img', 'leaflet-image-layer');
@@ -177,8 +175,9 @@ L.NonTiledLayer = L.Layer.extend({
         return new L.LatLngBounds(world1, world2);
     },
 
-    _viewreset: function () {
-        if (this._map.getZoom() < this.options.minZoom) {
+    _update: function () {
+        if (this._map.getZoom() < this.options.minZoom  ||
+			this._map.getZoom() > this.options.maxZoom) {
             this._div.style.visibility = 'hidden';
             return;
         }
@@ -188,14 +187,8 @@ L.NonTiledLayer = L.Layer.extend({
 
         if (this._bufferImage._bounds)
             this._resetImage(this._bufferImage);
-        if (this._currentImage._bounds)
-            this._resetImage(this._currentImage);
-    },
 
-    _update: function () {
-        this._viewreset();
-
-        var bounds = this._getClippedBounds();
+		var bounds = this._getClippedBounds();
 
         // re-project to corresponding pixel bounds
         var pix1 = this._map.latLngToContainerPoint(bounds.getNorthWest());
