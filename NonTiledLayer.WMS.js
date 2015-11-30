@@ -13,6 +13,11 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
         transparent: false
     },
 
+    options: {
+        crs: null,
+        uppercase: false
+    },
+
     initialize: function (url, options) { // (String, Object)
         this._wmsUrl = url;
 
@@ -32,8 +37,12 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
     },
 
     onAdd: function (map) {
-        var projectionKey = parseFloat(this.wmsParams.version) >= 1.3 ? 'crs' : 'srs';
-        this.wmsParams[projectionKey] = map.options.crs.code;
+
+        this._crs = this.options.crs || map.options.crs;
+        this._wmsVersion = parseFloat(this.wmsParams.version);
+
+        var projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
+        this.wmsParams[projectionKey] = this._crs.code;
 
         L.NonTiledLayer.prototype.onAdd.call(this, map);
     },
@@ -43,13 +52,18 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
         wmsParams.width = width;
         wmsParams.height = height;
 
-        var crs = this._map.options.crs;
+        var nw = this._crs.project(world1);
+        var se = this._crs.project(world2);
 
-        var p1 = crs.project(world1);
-        var p2 = crs.project(world2);
+        var url = this._wmsUrl;
 
-        var url = this._wmsUrl + L.Util.getParamString(wmsParams, this._wmsUrl) + '&bbox=' + p1.x + ',' + p2.y + ',' + p2.x + ',' + p1.y;
-        return url;
+        var bbox = bbox = (this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326 ?
+        [se.y, nw.x, nw.y, se.x] :
+        [nw.x, se.y, se.x, nw.y]).join(',');
+
+        return url +
+			L.Util.getParamString(this.wmsParams, url, this.options.uppercase) +
+			(this.options.uppercase ? '&BBOX=' : '&bbox=') + bbox;
     },
 
     setParams: function (params, noRedraw) {
