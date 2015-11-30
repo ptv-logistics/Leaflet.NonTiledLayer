@@ -19,6 +19,7 @@ The supported options
 * *opacity* - the opacity value between 0.0 and 1.0; default = 1.0
 * *minZoom* - the minimum zoom level for which the overlay is requested
 * *maxZoom* - the maximum zoom level for which the overlay is requested
+* *bounds* - the geographic bounds of the layer, default: L.latLngBounds([-180, -85.05], [180, 85.05])
 * *zIndex* - z-index of the images
 * *pane* - the name of the pane where the child div is inserted; default: 'overlayPane' 
 * *pointerEvents* - the pointer-events style for the overlayer, default: null
