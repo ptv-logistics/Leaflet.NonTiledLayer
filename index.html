@@ -5,7 +5,7 @@
     <title>Leaflet NonTiledLayer Example</title>
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-	<link rel="stylesheet" href="http://gpspekka.kapsi.fi/leaflet2/leaflet10fzc.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.css" />
     <style>
         body {
             padding: 0;
@@ -15,19 +15,23 @@
         html,
         body,
         #map {
-            height: 100%;
+            height: 100%;	
         }
     </style>
 </head>
 
 <body>
     <div id="map" />
-	<script src="http://gpspekka.kapsi.fi/leaflet2/leaflet10fzc.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.js"></script>
     <script src="./NonTiledLayer.js"></script>
     <script src="./NonTiledLayer.WMS.js"></script>
     <script>
         // initialize leaflet
-        var map = new L.Map('map', { zoomSnap: 0, zoomDelta: 0.5 });
+        var map = new L.Map('map', { 
+            // crs:L.CRS.EPSG4326, 
+			// zoomSnap: 0, 
+			// zoomDelta: 0.5 
+		});
 	
         // center Karlsruhe - setting fractional zoom
         map.setView(new L.LatLng(49.01, 8.4), 15.5);
@@ -41,7 +45,7 @@
             maxZoom: 19,
             minZoom: 0,
             opacity: 1.0,
-            noWrap: true,
+            noWrap: false,
             layers: 'xmap-sandbox-bg',
             format: 'image/png',
             transparent: false,
