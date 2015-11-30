@@ -9,7 +9,8 @@ L.NonTiledLayer = L.Layer.extend({
         zIndex: undefined,
         minZoom: 0,
 		maxZoom: 18,
-        pointerEvents: null
+		pointerEvents: null,
+		bounds: L.latLngBounds([-180, -85.05], [180, 85.05])
     },
     url: '',
 
@@ -160,17 +161,24 @@ L.NonTiledLayer = L.Layer.extend({
         var wgsBounds = this._map.getBounds();
 
         // truncate bounds to valid wgs bounds
-        var lon1 = wgsBounds.getNorthWest().lng;
-        var lat1 = wgsBounds.getNorthWest().lat;
-        var lon2 = wgsBounds.getSouthEast().lng;
-        var lat2 = wgsBounds.getSouthEast().lat;
-        lon1 = (lon1 + 180) % 360 - 180;
-        if (lat1 > 85.05) lat1 = 85.05;
-        if (lat2 < -85.05) lat2 = -85.05;
-        if (lon1 < -180) lon1 = -180;
-        if (lon2 > 180) lon2 = 180;
-        var world1 = new L.LatLng(lat1, lon1);
-        var world2 = new L.LatLng(lat2, lon2);
+        var mlon1 = wgsBounds.getNorthWest().lng;
+        var mlat1 = wgsBounds.getNorthWest().lat;
+        var mlon2 = wgsBounds.getSouthEast().lng;
+        var mlat2 = wgsBounds.getSouthEast().lat;
+
+        var llon1 = this.options.bounds.getNorthWest().lng;
+        var llat1 = this.options.bounds.getNorthWest().lat;
+        var llon2 = this.options.bounds.getSouthEast().lng;
+        var llat2 = this.options.bounds.getSouthEast().lat;
+
+        lon1 = (mlon1 + 180) % 360 - 180;
+        if (mlat1 > llat1) mlat1 = llat1;
+        if (mlat2 < llat2) mlat2 = llat2;
+        if (mlon1 < llon1) mlon1 = llon1;
+        if (mlon2 > llon2) mlon2 = llon2;
+
+        var world1 = new L.LatLng(mlat1, mlon1);
+        var world2 = new L.LatLng(mlat2, mlon2);
 
         return new L.LatLngBounds(world1, world2);
     },
