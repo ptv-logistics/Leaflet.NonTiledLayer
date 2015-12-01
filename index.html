@@ -15,7 +15,7 @@
         html,
         body,
         #map {
-            height: 100%;	
+            height: 100%;
         }
     </style>
 </head>
@@ -27,17 +27,17 @@
     <script src="./NonTiledLayer.WMS.js"></script>
     <script>
         // initialize leaflet
-        var map = new L.Map('map', { 
+        var map = new L.Map('map', {
             // crs:L.CRS.EPSG4326
-			// zoomSnap: 0, 
-			// zoomDelta: 0.5 
-		});
-	
+            // zoomSnap: 0,
+            // zoomDelta: 0.5
+        });
+
         // center Karlsruhe - setting fractional zoom
         map.setView(new L.LatLng(49.01, 8.4), 15.5);
 
         // using the xMapServer WMS adapter
-        var xMapWmsUrl = 'http://api-eu-test.cloud.ptvgroup.com/WMS/WMS?xtok=145080320094443';
+        var xMapWmsUrl = 'http://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=145080320094443';
         var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, TOMTOM';
 
         // add (tiled) background layer
@@ -95,7 +95,7 @@
             minZoom: 0,
             layers: 'meteosat:airmass',
             transparent: true,
-            version: '1.1.1',
+            version: '1.3.0',
             attribution: "EUMETSAT 2015",
             opacity: 0.75,
             pane: 'tilePane',
