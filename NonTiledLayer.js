@@ -8,9 +8,9 @@ L.NonTiledLayer = L.Layer.extend({
         opacity: 1.0,
         zIndex: undefined,
         minZoom: 0,
-		maxZoom: 18,
-		pointerEvents: null,
-		bounds: L.latLngBounds([-85.05, -180], [85.05, 180])
+        maxZoom: 18,
+        pointerEvents: null,
+        bounds: L.latLngBounds([-85.05, -180], [85.05, 180])
     },
     url: '',
 
@@ -54,7 +54,8 @@ L.NonTiledLayer = L.Layer.extend({
 
     getEvents: function () {
         var events = {
-            moveend: this._update
+            moveend: this._update,
+            zoom: this._viewreset
         };
 
         if (this._zoomAnimated) {
@@ -139,11 +140,11 @@ L.NonTiledLayer = L.Layer.extend({
     },
 
     _animateImage: function (image, e) {
-		var scale = this._map.getZoomScale(e.zoom),
+        var scale = this._map.getZoomScale(e.zoom),
 		    offset = this._map._latLngToNewLayerPoint(image._bounds.getNorthWest(), e.zoom, e.center);
 
-		L.DomUtil.setTransform(image, offset, scale);
-	},
+        L.DomUtil.setTransform(image, offset, scale);
+    },
 
     _resetImage: function (image) {
         var bounds = new L.Bounds(
@@ -183,8 +184,15 @@ L.NonTiledLayer = L.Layer.extend({
         return new L.LatLngBounds(world1, world2);
     },
 
+    _viewreset: function () {
+        if (this._bufferImage._bounds)
+            this._resetImage(this._bufferImage);
+        if (this._currentImage._bounds)
+            this._resetImage(this._currentImage);
+    },
+
     _update: function () {
-        if (this._map.getZoom() < this.options.minZoom  ||
+        if (this._map.getZoom() < this.options.minZoom ||
 			this._map.getZoom() > this.options.maxZoom) {
             this._div.style.visibility = 'hidden';
             return;
@@ -196,7 +204,7 @@ L.NonTiledLayer = L.Layer.extend({
         if (this._bufferImage._bounds)
             this._resetImage(this._bufferImage);
 
-		var bounds = this._getClippedBounds();
+        var bounds = this._getClippedBounds();
 
         // re-project to corresponding pixel bounds
         var pix1 = this._map.latLngToContainerPoint(bounds.getNorthWest());
