@@ -37,7 +37,7 @@
         map.setView(new L.LatLng(49.01, 8.4), 15.5);
 
         // using the xserver-internet WMS adapter
-        var xMapWmsUrl = 'http://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=145080320094443';
+        var xMapWmsUrl = 'http://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=870241687284044';
         var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, TOMTOM';
 
         // add (tiled) background layer
@@ -49,7 +49,8 @@
             layers: 'xmap-gravelpit-bg',
             format: 'image/png',
             transparent: false,
-            attribution: xMapAttribution
+            attribution: xMapAttribution,
+            zIndex: 1
         }).addTo(map);
 
         // add (non-tiled) label layer. Insert at tile pane
@@ -62,7 +63,7 @@
             transparent: true,
             attribution: xMapAttribution,
             pane: 'tilePane',
-            zIndex: 100
+            zIndex:3
         }).addTo(map);
 
         // add pois. Default - insert at overlayPane
@@ -89,7 +90,7 @@
             attribution: 'terrestris'
         }).addTo(map);
 
-        // insert airmass layer
+        // insert airmass layer, at tile pane between background and labels
         var airmass = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
             maxZoom: 8,
             minZoom: 0,
@@ -100,7 +101,7 @@
             opacity: 0.75,
             pane: 'tilePane',
             format: 'image/png',
-            zIndex: 50,
+            zIndex: 2,
             bounds: L.latLngBounds([-90.0019140328881, 71.0577423098384], [89.9725637543488, -70.9390024925306])
         }).addTo(map);
 
@@ -112,7 +113,7 @@
             'Bus Stops': busStops,
             'Air Mass': airmass
         };
-        L.control.layers({}, overlays).addTo(map);
+        L.control.layers({}, overlays, { autoZIndex: false }).addTo(map);
     </script>
 </body>
 </html>
