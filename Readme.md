@@ -9,8 +9,7 @@ You can see a demo here:
 
 http://ptv-logistics.github.io/Leaflet.NonTiledLayer
 
-It uses the WMS service of xMap-Server http://xserver.ptvgroup.com/en-uk/products/ptv-xserver/ptv-xmap/
-from PTV Group, which requires a tiled/non-tiled hybrid approach (and that is the reason i've built this).
+It uses the WMS service of [PTV xServer internet](http://xserver.ptvgroup.com/en-uk/cookbook/home/), which requires a tiled/non-tiled hybrid approach (and that is the reason i've built this).
 The sample also displays an OSM WMS overlay that also cannot be requested in tiles.
 
 The supported options
