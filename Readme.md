@@ -14,7 +14,7 @@ from PTV Group, which requires a tiled/non-tiled hybrid approach (and that is th
 The sample also displays an OSM WMS overlay that also cannot be requested in tiles.
 
 The supported options
-18```
+
 * *attribution* - the attribution text for the layer data. Default: ```''```
 * *opacity* - the opacity value between 0.0 and 1.0. Default: ```1.0```
 * *minZoom* - the minimum zoom level for which the overlay is requested. Default: ```0```
