@@ -14,15 +14,15 @@ from PTV Group, which requires a tiled/non-tiled hybrid approach (and that is th
 The sample also displays an OSM WMS overlay that also cannot be requested in tiles.
 
 The supported options
-
-* *attribution* - the attribution text for the layer data
-* *opacity* - the opacity value between 0.0 and 1.0; default = 1.0
-* *minZoom* - the minimum zoom level for which the overlay is requested
-* *maxZoom* - the maximum zoom level for which the overlay is requested
-* *bounds* - the geographic bounds of the layer, default: L.latLngBounds([-180, -85.05], [180, 85.05])
-* *zIndex* - z-index of the images
-* *pane* - the name of the pane where the child div is inserted; default: 'overlayPane' 
-* *pointerEvents* - the pointer-events style for the overlayer, default: null
+18```
+* *attribution* - the attribution text for the layer data. Default: ```''```
+* *opacity* - the opacity value between 0.0 and 1.0. Default: ```1.0```
+* *minZoom* - the minimum zoom level for which the overlay is requested. Default: ```0```
+* *maxZoom* - the maximum zoom level for which the overlay is requested. Defatul: ```18```
+* *bounds* - the geographic bounds of the layer. Default: ```L.latLngBounds([-180, -85.05], [180, 85.05])```
+* *zIndex* - z-index of the images. Default: ```undefined```
+* *pane* - the name of the pane where the child div is inserted. Default: ```'overlayPane'``` 
+* *pointerEvents* - the pointer-events style for the overlayer. Default: ```null```
 
 The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels in http://80.146.239.139/SpatialTutorial/05-SymbolScaling.html, or on top of the vector shapes, like the labels here http://ptv-logistics.github.io/fl-labs/ or here https://api-eu-test.cloud.ptvgroup.com/CodeSampleBrowser/index.jsp#samples/data-rendering-geoJson/view.
 
