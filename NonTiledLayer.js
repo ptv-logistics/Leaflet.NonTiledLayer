@@ -10,6 +10,7 @@ L.NonTiledLayer = L.Layer.extend({
         minZoom: 0,
         maxZoom: 18,
         pointerEvents: null,
+        pane: 'tilePane',
         bounds: L.latLngBounds([-85.05, -180], [85.05, 180])
     },
     url: '',
@@ -252,9 +253,6 @@ L.NonTiledLayer = L.Layer.extend({
         if (e.target.src != this.url) { // obsolete image
             return;
         }
-
-        if (this._addInteraction)
-            this._addInteraction(this._currentImage.tag)
 
         L.DomUtil.setOpacity(this._currentImage, 1);
         L.DomUtil.setOpacity(this._bufferImage, 0);
