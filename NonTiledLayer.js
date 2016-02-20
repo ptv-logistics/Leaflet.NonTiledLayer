@@ -257,6 +257,9 @@ L.NonTiledLayer = L.Layer.extend({
         L.DomUtil.setOpacity(this._currentImage, 1);
         L.DomUtil.setOpacity(this._bufferImage, 0);
 
+		if (this._addInteraction)
+            this._addInteraction(this._currentImage.tag);
+		
         var tmp = this._bufferImage;
         this._bufferImage = this._currentImage;
         this._currentImage = tmp;
