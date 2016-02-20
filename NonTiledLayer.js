@@ -1,4 +1,4 @@
-﻿/*
+/*
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
  */
 L.NonTiledLayer = L.Layer.extend({
@@ -131,7 +131,8 @@ L.NonTiledLayer = L.Layer.extend({
             galleryimg: 'no',
             onselectstart: L.Util.falseFn,
             onmousemove: L.Util.falseFn,
-            onload: L.bind(this._onImageLoad, this)
+            onload: L.bind(this._onImageLoad, this, true),
+            onerror: L.bind(this._onImageLoad, this, false)
         });
 
         return _image;
@@ -248,22 +249,18 @@ L.NonTiledLayer = L.Layer.extend({
         L.DomUtil.setOpacity(this._currentImage, 0);
     },
 
-    _onImageLoad: function (e) {
+    _onImageLoad: function (success, e) {
         if (e.target.src != this.url) { // obsolete image
             return;
         }
-
-        if (this._addInteraction)
-            this._addInteraction(this._currentImage.tag)
-
+        L.DomUtil[success ? 'removeClass' : 'addClass'](this._currentImage, 'invalid');
         L.DomUtil.setOpacity(this._currentImage, 1);
         L.DomUtil.setOpacity(this._bufferImage, 0);
 
         var tmp = this._bufferImage;
         this._bufferImage = this._currentImage;
         this._currentImage = tmp;
-
-        this.fire('load');
+        this.fire(success ? 'load' : 'error');
     }
 });
 
