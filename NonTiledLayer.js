@@ -10,6 +10,7 @@ L.NonTiledLayer = L.Layer.extend({
         minZoom: 0,
         maxZoom: 18,
         pointerEvents: null,
+        errorImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', //1px transparent GIF
         bounds: L.latLngBounds([-85.05, -180], [85.05, 180])
     },
     url: '',
@@ -131,8 +132,8 @@ L.NonTiledLayer = L.Layer.extend({
             galleryimg: 'no',
             onselectstart: L.Util.falseFn,
             onmousemove: L.Util.falseFn,
-            onload: L.bind(this._onImageLoad, this, true),
-            onerror: L.bind(this._onImageLoad, this, false)
+            onload: L.bind(this._onImageLoad, this),
+            onerror: L.bind(this._onImageError, this)
         });
 
         return _image;
@@ -248,22 +249,34 @@ L.NonTiledLayer = L.Layer.extend({
 
         L.DomUtil.setOpacity(this._currentImage, 0);
     },
-
-    _onImageLoad: function (success, e) {
-        if (e.target.src != this.url) { // obsolete image
-            return;
+	_onImageError:function(e){
+		this.fire('error', e);
+		L.DomUtil.addClass(e.target, 'invalid');
+        if(e.target.src !== this.options.errorImageUrl){ // prevent error loop if error image is not valid
+            e.target.src = this.options.errorImageUrl;
+            this._onImageDone(false, e);
         }
-        L.DomUtil[success ? 'removeClass' : 'addClass'](this._currentImage, 'invalid');
+	},
+    _onImageLoad:function(e){
+        if(e.target.src !== this.options.errorImageUrl){
+            L.DomUtil.removeClass(e.target, 'invalid');
+            if (e.target.src !== this.url) { // obsolete image
+                return;
+            }
+            this._onImageDone(true, e);
+        }
+    },
+	_onImageDone: function (success, e) {
         L.DomUtil.setOpacity(this._currentImage, 1);
         L.DomUtil.setOpacity(this._bufferImage, 0);
 
-		if (this._addInteraction)
+        if (this._addInteraction)
             this._addInteraction(this._currentImage.tag);
-		
+        
         var tmp = this._bufferImage;
         this._bufferImage = this._currentImage;
         this._currentImage = tmp;
-        this.fire(success ? 'load' : 'error');
+        this.fire('load', e);
     }
 });
 
