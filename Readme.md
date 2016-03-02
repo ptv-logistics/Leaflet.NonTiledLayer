@@ -22,6 +22,7 @@ The supported options
 * *zIndex* - z-index of the images. Default: ```undefined```
 * *pane* - the name of the pane where the child div is inserted. Default: ```'overlayPane'``` 
 * *pointerEvents* - the pointer-events style for the overlayer. Default: ```null```
+* *errorImageUrl* - the url of the image displayed when the layer fails to load (invalid request or server error). Default: 1px transparent gif ```data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==```
 
 The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels [here](http://80.146.239.139/SpatialTutorial/05-SymbolScaling.html), or on top of the vector shapes, like the labels [here](http://ptv-logistics.github.io/fl-labs/) or [here](https://api-eu-test.cloud.ptvgroup.com/CodeSampleBrowser/index.jsp#samples/data-rendering-geoJson/view).
 
