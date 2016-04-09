@@ -1,0 +1,23 @@
+{
+  "name": "leaflet.nontiledlayer",
+  "version": "1.0.0",
+  "description": "A leaflet layer for non-tiled overlays",
+  "main": "NonTiledLayer.WMS.js",
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ptv-logistics/Leaflet.NonTiledLayer.git"
+  },
+  "keywords": [
+    "leaflet",
+    "wms"
+  ],
+  "author": "Oliver Heilig",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ptv-logistics/Leaflet.NonTiledLayer/issues"
+  },
+  "homepage": "https://github.com/ptv-logistics/Leaflet.NonTiledLayer#readme"
+}
