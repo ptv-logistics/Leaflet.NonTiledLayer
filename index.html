@@ -5,7 +5,7 @@
     <title>Leaflet NonTiledLayer Example</title>
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-rc.1/leaflet.css" />
     <style>
         body {
             padding: 0;
@@ -22,22 +22,23 @@
 
 <body>
     <div id="map" />
-    <script src="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v1.0.0-rc.1/leaflet.js"></script>
     <script src="./NonTiledLayer.js"></script>
     <script src="./NonTiledLayer.WMS.js"></script>
     <script>
         // initialize leaflet
         var map = new L.Map('map', {
-            // crs:L.CRS.EPSG4326
-            // zoomSnap: 0,
-            // zoomDelta: 0.5
+            zoomSnap: 0.125,
+            zoomDelta: 0.5,
+			wheelPxPerZoomLevel: 100
+            // , crs:L.CRS.EPSG4326 // test for requrectangular projection
         });
 
         // center Karlsruhe - setting fractional zoom
         map.setView(new L.LatLng(49.01, 8.4), 15.5);
 
         // using the xserver-internet WMS adapter
-        var xMapWmsUrl = 'http://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=635029326683064';
+        var xMapWmsUrl = 'https://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=9577C530-1861-4616-A8B0-2D6341D2E45F';
         var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, TOMTOM';
 
         // add (tiled) background layer
