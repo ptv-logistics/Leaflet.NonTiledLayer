@@ -30,9 +30,14 @@
         var map = new L.Map('map', {
             zoomSnap: 0.125,
             zoomDelta: 0.5,
-			wheelPxPerZoomLevel: 100
+            wheelPxPerZoomLevel: 100
             // , crs:L.CRS.EPSG4326 // test for requrectangular projection
         });
+        
+		// link to GitHub page at attribution
+        L.control.attribution().setPrefix(
+            '<a href="https://github.com/ptv-logistics/Leaflet.NonTiledLayer">Leaflet.NonTiledLayer<\/a>')
+            .addTo(map);
 
         // center Karlsruhe - setting fractional zoom
         map.setView(new L.LatLng(49.01, 8.4), 15.5);
