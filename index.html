@@ -101,7 +101,7 @@
         var airmass = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
             maxZoom: 8,
             minZoom: 0,
-            layers: 'meteosat:msg_airmass',
+            layers: 'meteosat:msg_eview',
             transparent: true,
             version: '1.3.0',
             attribution: "EUMETSAT 2015",
@@ -109,7 +109,7 @@
             pane: 'tilePane',
             format: 'image/png',
             zIndex: 2,
-            bounds: L.latLngBounds([-90.0019140328881, 71.0577423098384], [89.9725637543488, -70.9390024925306])
+            bounds: L.latLngBounds([-77.0,77.0], [77.0,-77.0])
         }).addTo(map);
 
         // add layer selector
