@@ -1,7 +1,7 @@
 /*
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
  */
-L.NonTiledLayer = L.Layer.extend({
+L.NonTiledLayer = (L.Layer || L.Class).extend({
     includes: L.Mixin.Events,
     options: {
         attribution: '',
@@ -45,6 +45,19 @@ L.NonTiledLayer = L.Layer.extend({
         this._currentImage = this._initImage();
 
         this._update();
+    },
+
+    getPane: function(){
+        if (L.Layer){
+            return L.Layer.prototype.getPane.call(this);
+        }
+        if (this.options.pane) {
+            this._pane = this.options.pane;
+        }
+        else {
+            this._pane = this._map.getPanes().overlayPane;
+        }
+        return this._pane;
     },
 
     onRemove: function (map) {
