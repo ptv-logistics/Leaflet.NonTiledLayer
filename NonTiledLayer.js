@@ -25,7 +25,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 
     onAdd: function (map) {
         this._map = map;
-
+        if (L.version < "1.0") this._map.on(this.getEvents(), this);
         if (!this._div) {
             this._div = L.DomUtil.create('div', 'leaflet-image-layer');
             if (this.options.pointerEvents) {
@@ -65,6 +65,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 
         this._div.removeChild(this._bufferImage);
         this._div.removeChild(this._currentImage);
+        if (L.version < "1.0") this._map.off(this.getEvents(), this);
     },
 
     addTo: function (map) {
@@ -170,9 +171,20 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
         var scale = this._map.getZoomScale(e.zoom),
             offset = this._map._latLngToNewLayerPoint(image._bounds.getNorthWest(), e.zoom, e.center);
 
-        L.DomUtil.setTransform(image, offset, scale);
-    },
+        if (L.version < "1.0"){            
+            nw = image._bounds.getNorthWest(),
+            se = image._bounds.getSouthEast(),
 
+            topLeft = this._map._latLngToNewLayerPoint(nw, e.zoom, e.center),
+            size = this._map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft),
+            origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
+            image.style[L.DomUtil.TRANSFORM] =
+                L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
+            return;
+        }
+        L.DomUtil.setTransform(image, origin, scale);
+    },
+    
     _resetImage: function (image) {
         var bounds = new L.Bounds(
                 this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
