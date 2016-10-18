@@ -34,7 +34,7 @@ L.NonTiledLayer = L.Layer.extend({
             if (this.options.zIndex !== undefined) {
                 this._div.style.zIndex = this.options.zIndex;
             }
-            if (this.options.opacity !== undefined){
+            if (this.options.opacity !== undefined) {
                 this._div.style.opacity = this.options.opacity;
             }
         }
@@ -83,9 +83,9 @@ L.NonTiledLayer = L.Layer.extend({
         }
         return this;
     },
-    
+
     setZIndex: function (zIndex) {
-        if(zIndex){
+        if (zIndex) {
             this.options.zIndex = zIndex;
             if (this._div) {
                 this._div.style.zIndex = zIndex;
@@ -97,14 +97,14 @@ L.NonTiledLayer = L.Layer.extend({
     // TODO remove bringToFront/bringToBack duplication from TileLayer/Path
     bringToFront: function () {
         if (this._div) {
-            this._pane.appendChild(this._div);
+            this.getPane().appendChild(this._div);
         }
         return this;
     },
 
     bringToBack: function () {
         if (this._div) {
-            this._pane.insertBefore(this._div, this._pane.firstChild);
+            this.getPane().insertBefore(this._div, this.getPane().firstChild);
         }
         return this;
     },
@@ -116,7 +116,7 @@ L.NonTiledLayer = L.Layer.extend({
     _initImage: function (_image) {
         var _image = L.DomUtil.create('img', 'leaflet-image-layer');
 
-        
+
         this._div.appendChild(_image);
 
         if (this._map.options.zoomAnimation && L.Browser.any3d) {
@@ -124,7 +124,6 @@ L.NonTiledLayer = L.Layer.extend({
         } else {
             L.DomUtil.addClass(_image, 'leaflet-zoom-hide');
         }
-
 
 
         //TODO createImage util method to remove duplication
@@ -162,8 +161,8 @@ L.NonTiledLayer = L.Layer.extend({
 
     _resetImage: function (image) {
         var bounds = new L.Bounds(
-                this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
-                this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
+            this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
+            this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
             size = bounds.getSize();
 
         L.DomUtil.setPosition(image, bounds.min);
@@ -249,16 +248,16 @@ L.NonTiledLayer = L.Layer.extend({
 
         L.DomUtil.setOpacity(this._currentImage, 0);
     },
-	_onImageError:function(e){
-		this.fire('error', e);
-		L.DomUtil.addClass(e.target, 'invalid');
-        if(e.target.src !== this.options.errorImageUrl){ // prevent error loop if error image is not valid
+    _onImageError: function (e) {
+        this.fire('error', e);
+        L.DomUtil.addClass(e.target, 'invalid');
+        if (e.target.src !== this.options.errorImageUrl) { // prevent error loop if error image is not valid
             e.target.src = this.options.errorImageUrl;
             this._onImageDone(false, e);
         }
-	},
-    _onImageLoad:function(e){
-        if(e.target.src !== this.options.errorImageUrl){
+    },
+    _onImageLoad: function (e) {
+        if (e.target.src !== this.options.errorImageUrl) {
             L.DomUtil.removeClass(e.target, 'invalid');
             if (e.target.src !== this.url) { // obsolete image
                 return;
@@ -266,13 +265,13 @@ L.NonTiledLayer = L.Layer.extend({
             this._onImageDone(true, e);
         }
     },
-	_onImageDone: function (success, e) {
+    _onImageDone: function (success, e) {
         L.DomUtil.setOpacity(this._currentImage, 1);
         L.DomUtil.setOpacity(this._bufferImage, 0);
 
         if (this._addInteraction)
             this._addInteraction(this._currentImage.tag);
-        
+
         var tmp = this._bufferImage;
         this._bufferImage = this._currentImage;
         this._currentImage = tmp;
