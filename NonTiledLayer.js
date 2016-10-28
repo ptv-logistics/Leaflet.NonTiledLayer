@@ -13,7 +13,7 @@ L.NonTiledLayer = L.Layer.extend({
         errorImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', //1px transparent GIF
         bounds: L.latLngBounds([-85.05, -180], [85.05, 180])
     },
-    url: '',
+    key: '',
 
     // override this method in the inherited class
     //getImageUrl: function (world1, world2, width, height) {},
@@ -236,17 +236,23 @@ L.NonTiledLayer = L.Layer.extend({
         this._resetImage(this._currentImage);
 
         var i = this._currentImage;
-        if (this.getImageUrl)
+        
+        // create a key identifying the current request
+        this.key = '' + bounds.getNorthWest() + ', ' + bounds.getSouthEast() + ', ' + width + ', ' + height;
+        
+       
+        if (this.getImageUrl) {
             i.src = this.getImageUrl(bounds.getNorthWest(), bounds.getSouthEast(), width, height);
+            i.key = this.key;
+        }
         else
-            this.getImageUrlAsync(bounds.getNorthWest(), bounds.getSouthEast(), width, height, function (url, tag) {
+            this.getImageUrlAsync(bounds.getNorthWest(), bounds.getSouthEast(), width, height, this.key, function (key, url, tag) {
+                i.key = key;
                 i.src = url;
                 i.tag = tag;
             });
 
-        this.url = i.src;
-
-        L.DomUtil.setOpacity(this._currentImage, 0);
+         L.DomUtil.setOpacity(this._currentImage, 0);
     },
     _onImageError: function (e) {
         this.fire('error', e);
@@ -259,7 +265,7 @@ L.NonTiledLayer = L.Layer.extend({
     _onImageLoad: function (e) {
         if (e.target.src !== this.options.errorImageUrl) {
             L.DomUtil.removeClass(e.target, 'invalid');
-            if (e.target.src !== this.url) { // obsolete image
+            if (!e.target.key || e.target.key !== this.key) { // obsolete / outdated image
                 return;
             }
             this._onImageDone(true, e);
@@ -269,7 +275,7 @@ L.NonTiledLayer = L.Layer.extend({
         L.DomUtil.setOpacity(this._currentImage, 1);
         L.DomUtil.setOpacity(this._bufferImage, 0);
 
-        if (this._addInteraction)
+        if (this._addInteraction && this._currentImage.tag)
             this._addInteraction(this._currentImage.tag);
 
         var tmp = this._bufferImage;
