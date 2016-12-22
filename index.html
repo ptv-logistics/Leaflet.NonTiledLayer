@@ -5,7 +5,7 @@
     <title>Leaflet NonTiledLayer Example</title>
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-rc.2/leaflet.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.2/leaflet.css" />
     <style>
         body {
             padding: 0;
@@ -22,7 +22,7 @@
 
 <body>
     <div id="map" />
-    <script src="http://cdn.leafletjs.com/leaflet/v1.0.0-rc.2/leaflet.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v1.0.2/leaflet.js"></script>
     <script src="./NonTiledLayer.js"></script>
     <script src="./NonTiledLayer.WMS.js"></script>
 	<script src="./token.js"></script>
@@ -30,7 +30,7 @@
         // initialize leaflet
         var map = new L.Map('map', {
             worldCopyJump: true,
-            zoomSnap: 0.125,
+            zoomSnap: 0.25,
             zoomDelta: 0.5,
             wheelPxPerZoomLevel: 100
             //, crs:L.CRS.EPSG4326 // test for Plate Carree projection
@@ -96,7 +96,7 @@
             format: 'image/png',
             transparent: true,
             attribution: 'terrestris'
-        }).addTo(map);
+        }); //.addTo(map); // doesn't seem to work anymore - find another one
 
         // insert airmass layer, at tile pane between background and labels
         var airmass = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
@@ -118,7 +118,7 @@
             'Background': background,
             'Labels': labels,
             'POI': poi,
-            'Bus Stops': busStops,
+//            'Bus Stops': busStops,
             'Air Mass': airmass
         };
         L.control.layers({}, overlays, { autoZIndex: false }).addTo(map);
