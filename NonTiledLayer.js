@@ -11,7 +11,8 @@ L.NonTiledLayer = L.Layer.extend({
         maxZoom: 18,
         pointerEvents: null,
         errorImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', //1px transparent GIF
-        bounds: L.latLngBounds([-85.05, -180], [85.05, 180])
+        bounds: L.latLngBounds([-85.05, -180], [85.05, 180]),
+		useCanvas: true
     },
     key: '',
 
@@ -37,12 +38,27 @@ L.NonTiledLayer = L.Layer.extend({
             if (this.options.opacity !== undefined) {
                 this._div.style.opacity = this.options.opacity;
             }
+			
+
+			this.currentAnimationFrame = -1;
+            this.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                                        window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+                                            return window.setTimeout(callback, 1000 / 60);
+                                        };
+            this.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame ||
+                                        window.webkitCancelAnimationFrame || window.msCancelAnimationFrame || function (id) { clearTimeout(id); };
         }
 
         this.getPane().appendChild(this._div);
 
-        this._bufferImage = this._initImage();
-        this._currentImage = this._initImage();
+		if(this.options.useCanvas) {
+			this._bufferCanvas = this._initCanvas();
+			this._currentCanvas = this._initCanvas();
+		}
+		else {
+			this._bufferImage = this._initImage();
+			this._currentImage = this._initImage();
+		}
 
         this._update();
     },
@@ -50,8 +66,14 @@ L.NonTiledLayer = L.Layer.extend({
     onRemove: function (map) {
         this.getPane().removeChild(this._div);
 
-        this._div.removeChild(this._bufferImage);
-        this._div.removeChild(this._currentImage);
+		if(this.options.useCanvas) {
+			this._div.removeChild(this._bufferCanvas);
+			this._div.removeChild(this._currentCanvas);
+		}
+		else {
+			this._div.removeChild(this._bufferImage);
+			this._div.removeChild(this._currentImage);
+		}
     },
 
     addTo: function (map) {
@@ -61,8 +83,8 @@ L.NonTiledLayer = L.Layer.extend({
 
     getEvents: function () {
         var events = {
-            moveend: this._update,
-            zoom: this._viewreset
+            moveend: this._update
+//            zoom: this._viewreset
         };
 
         if (this._zoomAnimated) {
@@ -113,9 +135,29 @@ L.NonTiledLayer = L.Layer.extend({
         return this.options.attribution;
     },
 
-    _initImage: function (_image) {
-        var _image = L.DomUtil.create('img', 'leaflet-image-layer');
+    _initCanvas: function () {
+        var _canvas = L.DomUtil.create('canvas', 'leaflet-image-layer');
 
+        this._div.appendChild(_canvas);
+		_canvas._image = new Image();
+		this._ctx =     _canvas.getContext("2d");
+		
+        if (this._map.options.zoomAnimation && L.Browser.any3d) {
+            L.DomUtil.addClass(_canvas, 'leaflet-zoom-animated');
+        } else {
+            L.DomUtil.addClass(_canvas, 'leaflet-zoom-hide');
+        }
+
+        L.extend(_canvas._image, {
+			onload: L.bind(this._onImageLoad, this),
+            onerror: L.bind(this._onImageError, this)
+		});
+		
+		return _canvas;
+    },
+	
+    _initImage: function () {
+        var _image = L.DomUtil.create('img', 'leaflet-image-layer');
 
         this._div.appendChild(_image);
 
@@ -145,18 +187,32 @@ L.NonTiledLayer = L.Layer.extend({
         return this;
     },
 
-    _animateZoom: function (e) {
-        if (this._currentImage._bounds)
-            this._animateImage(this._currentImage, e);
-        if (this._bufferImage._bounds)
-            this._animateImage(this._bufferImage, e);
+	_animateZoom: function (e) {
+		if(this.options.useCanvas) {
+			if (this._currentCanvas._bounds)
+				this._animateImage(this._currentCanvas, e);
+			if (this._bufferCanvas._bounds)
+				this._animateImage(this._bufferCanvas, e);
+		}
+		else {
+			if (this._currentImage._bounds)
+				this._animateImage(this._currentImage, e);
+			if (this._bufferImage._bounds)
+				this._animateImage(this._bufferImage, e);
+		}
     },
-
+	
     _animateImage: function (image, e) {
-        var scale = this._map.getZoomScale(e.zoom),
-            offset = this._map._latLngToNewLayerPoint(image._bounds.getNorthWest(), e.zoom, e.center);
+				var map = this._map,
+			scale = image._scale * map.getZoomScale(e.zoom),
+			nw = image._bounds.getNorthWest(),
+			se = image._bounds.getSouthEast(),
 
-        L.DomUtil.setTransform(image, offset, scale);
+			topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
+
+        L.DomUtil.setTransform(image, topLeft, scale);
+
+		image._lastScale = scale;
     },
 
     _resetImage: function (image) {
@@ -165,11 +221,17 @@ L.NonTiledLayer = L.Layer.extend({
             this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
             size = bounds.getSize();
 
-        L.DomUtil.setPosition(image, bounds.min);
+		L.DomUtil.setPosition(image, bounds.min);
 
-        image.style.width = size.x + 'px';
-        image.style.height = size.y + 'px';
-    },
+		if(this.options.useCanvas) {
+			image.width = size.x;
+			image.height = size.y;
+
+		} else {
+			image.style.width = size.x + 'px';
+			image.style.height = size.y + 'px';
+		}    
+	},
 
     _getClippedBounds: function () {
         var wgsBounds = this._map.getBounds();
@@ -197,13 +259,6 @@ L.NonTiledLayer = L.Layer.extend({
         return new L.LatLngBounds(world1, world2);
     },
 
-    _viewreset: function () {
-        if (this._bufferImage._bounds)
-            this._resetImage(this._bufferImage);
-        if (this._currentImage._bounds)
-            this._resetImage(this._currentImage);
-    },
-
     _update: function () {
         if (this._map.getZoom() < this.options.minZoom ||
             this._map.getZoom() > this.options.maxZoom) {
@@ -213,9 +268,6 @@ L.NonTiledLayer = L.Layer.extend({
         else {
             this._div.style.visibility = 'visible';
         }
-
-        if (this._bufferImage._bounds)
-            this._resetImage(this._bufferImage);
 
         var bounds = this._getClippedBounds();
 
@@ -231,12 +283,29 @@ L.NonTiledLayer = L.Layer.extend({
         if (width < 32 || height < 32)
             return;
 
-        this._currentImage._bounds = bounds;
+		var i;
+		if(this.options.useCanvas) {
+			// set scales for zoom animation
+			this._bufferCanvas._scale = this._bufferCanvas._lastScale;
+			this._currentCanvas._scale = this._currentCanvas._lastScale = 1;
+			
+			this._currentCanvas._bounds = bounds;
 
-        this._resetImage(this._currentImage);
+			this._resetImage(this._currentCanvas);
 
-        var i = this._currentImage;
-        
+			i = this._currentCanvas._image;
+		} else {
+			// set scales for zoom animation
+			this._bufferImage._scale = this._bufferImage._lastScale;
+			this._currentImage._scale = this._currentImage._lastScale = 1;
+
+			this._currentImage._bounds = bounds;
+
+			this._resetImage(this._currentImage);
+ 
+			i = this._currentImage;
+		}
+	       
         // create a key identifying the current request
         this.key = '' + bounds.getNorthWest() + ', ' + bounds.getSouthEast() + ', ' + width + ', ' + height;
         
@@ -252,7 +321,11 @@ L.NonTiledLayer = L.Layer.extend({
                 i.tag = tag;
             });
 
-         L.DomUtil.setOpacity(this._currentImage, 0);
+		if(this.options.useCanvas) {
+			L.DomUtil.setOpacity(this._currentCanvas, 0);
+		} else {
+			L.DomUtil.setOpacity(this._currentImage, 0);
+		}
     },
     _onImageError: function (e) {
         this.fire('error', e);
@@ -272,17 +345,41 @@ L.NonTiledLayer = L.Layer.extend({
         }
     },
     _onImageDone: function (success, e) {
-        L.DomUtil.setOpacity(this._currentImage, 1);
-        L.DomUtil.setOpacity(this._bufferImage, 0);
+		if(this.options.useCanvas) {
+			if (this.currentAnimationFrame >= 0) {
+                this.cancelAnimationFrame.call(window, this.currentAnimationFrame);
+            }
+            this.currentAnimationFrame = this.requestAnimationFrame.call(window, L.bind(function(e){this._render(e)}, this));
+		} else {
+			L.DomUtil.setOpacity(this._currentImage, 1);
+			L.DomUtil.setOpacity(this._bufferImage, 0);
 
-        if (this._addInteraction && this._currentImage.tag)
-            this._addInteraction(this._currentImage.tag);
+			// Todo: addInteraction for canvas
+			if (this._addInteraction && this._currentImage.tag)
+				this._addInteraction(this._currentImage.tag);
 
-        var tmp = this._bufferImage;
-        this._bufferImage = this._currentImage;
-        this._currentImage = tmp;
-        this.fire('load', e);
-    }
+			var tmp = this._bufferImage;
+			this._bufferImage = this._currentImage;
+			this._currentImage = tmp;
+			
+			this.fire('load', e);
+		}		
+    },
+	_render: function(e) { 
+		var ctx = this._currentCanvas.getContext("2d");
+
+		ctx.drawImage(this._currentCanvas._image, 0, 0);
+		
+		L.DomUtil.setOpacity(this._currentCanvas, 1);
+		L.DomUtil.setOpacity(this._bufferCanvas, 0);
+		
+		var tmp = this._bufferCanvas;
+		this._bufferCanvas = this._currentCanvas;
+		this._currentCanvas = tmp;
+
+		this.fire('load', e);
+	}
+
 });
 
 L.nonTiledLayer = function () {
