@@ -54,9 +54,6 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
             this._useCanvas = this.options.useCanvas;
         }
 
-
-        this._useCanvas = this.options._useCanvas && canvasSupported;
-
         if (this._useCanvas) {
             this._bufferCanvas = this._initCanvas();
             this._currentCanvas = this._initCanvas();
