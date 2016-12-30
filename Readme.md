@@ -14,7 +14,7 @@ The sample also displays a WMS overlay that also cannot be requested in tiles.
 
 The layer supports both Leaflet 0.7.x and Leaflet 1.0. The demo for 0.7. can be viewed here:
 
-http://ptv-logistics.github.io/Leaflet.NonTiledLayer/test.o.7.html
+http://ptv-logistics.github.io/Leaflet.NonTiledLayer/test.0.7.html
 
 The supported options
 
