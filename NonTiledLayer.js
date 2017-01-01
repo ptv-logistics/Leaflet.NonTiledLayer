@@ -48,7 +48,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
         this.getPane().appendChild(this._div);
 
         var canvasSupported = !!window.HTMLCanvasElement;
-        if (typeof this.options._useCanvas === 'undefined') {
+        if (typeof this.options.useCanvas === 'undefined') {
             this._useCanvas = canvasSupported;
         } else {
             this._useCanvas = this.options.useCanvas;
@@ -97,14 +97,33 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
         return this;
     },
 
+    _setZoom: function () {
+        if (this._useCanvas) {
+            if (this._currentCanvas._bounds)
+                this._resetImageScale(this._currentCanvas);
+            if (this._bufferCanvas._bounds)
+                this._resetImageScale(this._bufferCanvas);
+        }
+        else {
+            if (this._currentImage._bounds)
+                this._resetImageScale(this._currentImage);
+            if (this._bufferImage._bounds)
+                this._resetImageScale(this._bufferImage);
+        }
+    },
+    
     getEvents: function () {
         var events = {
             moveend: this._update
-            //            zoom: this._viewreset
         };
 
         if (this._zoomAnimated) {
             events.zoomanim = this._animateZoom;
+        }
+
+        // fix: no zoomanim for pinch with Leaflet 1.0!
+        if(L.version >= "1.0") {
+            events.zoom = this._setZoom;
         }
 
         return events;
@@ -233,19 +252,31 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
                 L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
         } else {
             var map = this._map,
-                scale = image._scale * map.getZoomScale(e.zoom),
+                scale = image._scale * image._sscale * map.getZoomScale(e.zoom),
                 nw = image._bounds.getNorthWest(),
                 se = image._bounds.getSouthEast(),
 
                 topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
 
             L.DomUtil.setTransform(image, topLeft, scale);
-
-            image._lastScale = scale;
         }
 
 
         image._lastScale = scale;
+    },
+
+    _resetImageScale: function (image) {
+        var bounds = new L.Bounds(
+            this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
+            this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
+            size = bounds.getSize(),
+            mSize = this._map.getSize();
+
+            var scale = size.x / mSize.x;
+            image._sscale = scale;
+            console.log(image._sscale);
+
+            L.DomUtil.setTransform(image, bounds.min, scale);
     },
 
     _resetImage: function (image) {
@@ -255,6 +286,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
             size = bounds.getSize();
 
         L.DomUtil.setPosition(image, bounds.min);
+        image._sscale = 1;
 
         if (this._useCanvas) {
             image.width = size.x;
@@ -321,6 +353,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
             // set scales for zoom animation
             this._bufferCanvas._scale = this._bufferCanvas._lastScale;
             this._currentCanvas._scale = this._currentCanvas._lastScale = 1;
+            this._bufferCanvas._sscale = 1;
 
             this._currentCanvas._bounds = bounds;
 
@@ -331,6 +364,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
             // set scales for zoom animation
             this._bufferImage._scale = this._bufferImage._lastScale;
             this._currentImage._scale = this._currentImage._lastScale = 1;
+            this._bufferImage._sscale = 1;
 
             this._currentImage._bounds = bounds;
 
