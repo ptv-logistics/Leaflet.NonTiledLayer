@@ -1,3 +1,6 @@
+Leaflet.NonTiledLayer [![Build status](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer.svg)](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer) ![Leaflet 0.7.x compatible!](https://img.shields.io/badge/Leaflet%200.7.x-%E2%9C%93-1EB300.svg?style=flat) ![Leaflet 1.0.0 compatible!](https://img.shields.io/badge/Leaflet%201.0.0-%E2%9C%93-1EB300.svg?style=flat)
+=====================
+
 While Leaflet handles the de-facto standard for stitching a map from tiles very well, 
 there is no concept for imagery data that cannot be queried in tiles.
 
