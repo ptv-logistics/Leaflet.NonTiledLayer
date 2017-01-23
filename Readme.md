@@ -1,5 +1,5 @@
 While Leaflet handles the de-facto standard for stitching a map from tiles very well, 
-i haven't found a concept for imagery data that cannot be queried in tiles.
+there is no concept for imagery data that cannot be queried in tiles.
 
 Not all imagery providers can handle tiles properly, for example if they render labels dynamically.
 So we've added a Leaflet.NonTiledLayer which gets the imagery for the complete map viewport whenever it changes.
