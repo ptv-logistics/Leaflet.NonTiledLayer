@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 						],
 					],
 					browserifyOptions: {
-						standalone: 'L.TileLayer.ClickableTiles'
+						standalone: 'L.NonTiledLayer'
 					}
 				}
 			}
