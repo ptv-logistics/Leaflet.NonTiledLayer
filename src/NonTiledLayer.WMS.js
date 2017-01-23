@@ -1,6 +1,10 @@
 /*
  * L.NonTiledLayer.WMS is used for putting WMS non tiled layers on the map.
  */
+"use strict";
+
+var L = require('leaflet');
+
 L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 
     defaultWmsParams: {
@@ -81,3 +85,5 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 L.nonTiledLayer.wms = function (url, options) {
     return new L.NonTiledLayer.WMS(url, options);
 };
+
+module.exports = L.NonTiledLayer.WMS;
