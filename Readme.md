@@ -1,6 +1,7 @@
 # Leaflet.NonTiledLayer 
 
 [![Build status](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer.svg)](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer)
+[![NPM version](https://img.shields.io/npm/v/leaflet.nontiledlayer.svg)](https://www.npmjs.com/package/leaflet.nontiledlayer)
 ![Leaflet compatible!](https://img.shields.io/badge/Leaflet-0.7.7%2F1.0.2-blue.svg?style=flat)
 
 ## Purpose
