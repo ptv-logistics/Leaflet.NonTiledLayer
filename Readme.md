@@ -1,3 +1,10 @@
+# Leaflet.NonTiledLayer 
+
+[![Build status](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer.svg)](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer)
+![Leaflet compatible!](https://img.shields.io/badge/Leaflet-0.7.7%2F1.0.2-blue.svg?style=flat)
+
+## Purpose
+
 While Leaflet handles the de-facto standard for stitching a map from tiles very well, 
 there is no concept for imagery data that cannot be queried in tiles.
 
@@ -16,7 +23,7 @@ The layer supports both Leaflet 0.7.x and Leaflet 1.0. The demo for 0.7. can be 
 
 http://ptv-logistics.github.io/Leaflet.NonTiledLayer/test.0.7.html
 
-The supported options
+## The supported options
 
 * *attribution* - the attribution text for the layer data. Default: ```''```
 * *opacity* - the opacity value between 0.0 and 1.0. Default: ```1.0```
