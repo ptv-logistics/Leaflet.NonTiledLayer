@@ -28,6 +28,9 @@
     <script src="./dist/NonTiledLayer.js"></script>
 	<script src="./token.js"></script>
     <script>
+        if(!window.token)
+            alert("You need an xServer-internet token to run this demo");
+
         // initialize leaflet
         var map = new L.Map('map', {
             worldCopyJump: true,
