@@ -421,7 +421,6 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
             L.DomUtil.setOpacity(this._currentImage, 1);
             L.DomUtil.setOpacity(this._bufferImage, 0);
 
-            // Todo: addInteraction for canvas
             if (this._addInteraction && this._currentImage.tag)
                 this._addInteraction(this._currentImage.tag);
 
@@ -439,6 +438,9 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 
         L.DomUtil.setOpacity(this._currentCanvas, 1);
         L.DomUtil.setOpacity(this._bufferCanvas, 0);
+
+        if (this._addInteraction && this._currentCanvas._image.tag)
+            this._addInteraction(this._currentCanvas._image.tag);
 
         var tmp = this._bufferCanvas;
         this._bufferCanvas = this._currentCanvas;
