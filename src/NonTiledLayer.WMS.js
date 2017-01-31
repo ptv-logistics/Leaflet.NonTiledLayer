@@ -51,13 +51,13 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
         L.NonTiledLayer.prototype.onAdd.call(this, map);
     },
 
-    getImageUrl: function (world1, world2, width, height) {
+    getImageUrl: function (bounds, width, height) {
         var wmsParams = this.wmsParams;
         wmsParams.width = width;
         wmsParams.height = height;
 
-        var nw = this._crs.project(world1);
-        var se = this._crs.project(world2);
+        var nw = this._crs.project(bounds.getNorthWest());
+        var se = this._crs.project(bounds.getSouthEast());
 
         var url = this._wmsUrl;
 

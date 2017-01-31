@@ -53,13 +53,13 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
         L.NonTiledLayer.prototype.onAdd.call(this, map);
     },
 
-    getImageUrl: function (world1, world2, width, height) {
+    getImageUrl: function (bounds, width, height) {
         var wmsParams = this.wmsParams;
         wmsParams.width = width;
         wmsParams.height = height;
 
-        var nw = this._crs.project(world1);
-        var se = this._crs.project(world2);
+        var nw = this._crs.project(bounds.getNorthWest());
+        var se = this._crs.project(bounds.getSouthEast());
 
         var url = this._wmsUrl;
 
@@ -116,8 +116,8 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
     key: '',
 
     // override this method in the inherited class
-    //getImageUrl: function (world1, world2, width, height) {},
-    //getImageUrlAsync: function (world1, world2, width, height, f) {},
+    //getImageUrl: function (bounds, width, height) {},
+    //getImageUrlAsync: function (bounds, width, height, f) {},
 
     initialize: function (options) {
         L.setOptions(this, options);
@@ -476,11 +476,11 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 
 
         if (this.getImageUrl) {
-            i.src = this.getImageUrl(bounds.getNorthWest(), bounds.getSouthEast(), width, height);
+            i.src = this.getImageUrl(bounds, width, height);
             i.key = this.key;
         }
         else
-            this.getImageUrlAsync(bounds.getNorthWest(), bounds.getSouthEast(), width, height, this.key, function (key, url, tag) {
+            this.getImageUrlAsync(bounds, width, height, this.key, function (key, url, tag) {
                 i.key = key;
                 i.src = url;
                 i.tag = tag;
