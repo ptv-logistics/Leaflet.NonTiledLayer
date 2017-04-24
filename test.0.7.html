@@ -27,13 +27,13 @@
     <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.3/dist/NonTiledLayer.js"></script>
     <!-- <script src="./dist/NonTiledLayer.js"></script> -->
-	<script src="./token.js"></script>
+    <script src="./token.js"></script>
     <script>
         if(!window.token)
             alert("You need an xServer-internet token to run this demo");
 
         // initialize leaflet
-        var map = new L.Map('map', {
+        var map = L.map('map', {
             worldCopyJump: true
             //, crs:L.CRS.EPSG4326 // test for Plate Carree projection
         });
@@ -43,14 +43,14 @@
             '<a href="https://github.com/ptv-logistics/Leaflet.NonTiledLayer">Leaflet.NonTiledLayer<\/a>');
 
         // center Karlsruhe - setting fractional zoom
-        map.setView(new L.LatLng(49.01, 8.4), 16);
+        map.setView(L.latLng(49.01, 8.4), 16);
 
         // using the xserver-internet WMS adapter
         var xMapWmsUrl = 'https://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=' + token;
         var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, TOMTOM';
 
         // add (tiled) background layer
-        var background = new L.TileLayer.WMS(xMapWmsUrl, {
+        var background = L.tileLayer.wms(xMapWmsUrl, {
             maxZoom: 19,
             minZoom: 0,
             opacity: 1.0,
@@ -63,7 +63,7 @@
         }).addTo(map);
 
         // add (non-tiled) label layer. Insert at tile pane
-        var labels = new L.NonTiledLayer.WMS(xMapWmsUrl, {
+        var labels = L.nonTiledLayer.wms(xMapWmsUrl, {
             maxZoom: 19,
             minZoom: 0,
             opacity: 1.0,
@@ -76,7 +76,7 @@
         }).addTo(map);
 
         // add pois. Default - insert at overlayPane
-        var poi = new L.NonTiledLayer.WMS(xMapWmsUrl, {
+        var poi = L.nonTiledLayer.wms(xMapWmsUrl, {
             maxZoom: 19,
             minZoom: 16,
             zIndex: 1, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
@@ -88,7 +88,7 @@
         }).addTo(map);
 
         // add bus stops. Default - insert at overlayPane
-        var busStops = new L.NonTiledLayer.WMS('http://ows.terrestris.de/osm-haltestellen', {
+        var busStops = L.nonTiledLayer.wms('http://ows.terrestris.de/osm-haltestellen', {
             maxZoom: 19,
             minZoom: 14,
             zIndex: 2, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
@@ -100,7 +100,7 @@
         }).addTo(map); // doesn't seem to work anymore - find another one
 
         // insert airmass layer, at tile pane between background and labels
-        var airmass = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
+        var airmass = L.nonTiledLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
             maxZoom: 8,
             minZoom: 0,
             layers: 'meteosat:msg_eview',
