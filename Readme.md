@@ -2,7 +2,7 @@
 
 [![Build status](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer.svg)](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer)
 [![NPM version](https://img.shields.io/npm/v/leaflet.nontiledlayer.svg)](https://www.npmjs.com/package/leaflet.nontiledlayer)
-![Leaflet compatible!](https://img.shields.io/badge/Leaflet-0.7.7%2F1.0.2-blue.svg?style=flat)
+![Leaflet compatible!](https://img.shields.io/badge/Leaflet-0.7.x%2F1.0.x-blue.svg?style=flat)
 
 ## Purpose
 
@@ -10,7 +10,7 @@ While Leaflet handles the de-facto standard for stitching a map from tiles very 
 there is no concept for imagery data that cannot be queried in tiles.
 
 Not all imagery providers can handle tiles properly, for example if they render labels dynamically.
-So we've added a Leaflet.NonTiledLayer which gets the imagery for the complete map viewport whenever it changes.
+So we've added a Leaflet.NonTiledLayer, which gets the imagery for the complete map viewport whenever it changes.
 Leaflet.NonTiledLayer.WMS is the implementation that makes WMS requests, similar to the TileLayer.WMS.
 
 You can see a demo here:
@@ -18,9 +18,9 @@ You can see a demo here:
 http://ptv-logistics.github.io/Leaflet.NonTiledLayer/index.html
 
 It uses the WMS service of [PTV xServer internet](http://xserver.ptvgroup.com/en-uk/cookbook/home/), which requires a tiled/non-tiled hybrid approach (and that is the reason we've built this).
-The sample also displays a WMS overlay that also cannot be requested in tiles.
+The sample also displays some 3rd-party WMS overlays that also cannot be requested in tiles.
 
-The layer supports both Leaflet 0.7.x and Leaflet 1.0. The demo for 0.7. can be viewed here:
+The layer supports both Leaflet 0.7.x and Leaflet 1.0.x. The demo for 0.7 can be viewed here:
 
 http://ptv-logistics.github.io/Leaflet.NonTiledLayer/test.0.7.html
 
@@ -31,12 +31,12 @@ http://ptv-logistics.github.io/Leaflet.NonTiledLayer/test.0.7.html
 * *minZoom* - the minimum zoom level for which the overlay is requested. Default: ```0```
 * *maxZoom* - the maximum zoom level for which the overlay is requested. Default: ```18```
 * *bounds* - the geographic bounds of the layer. Default: ```L.latLngBounds([-180, -85.05], [180, 85.05])```
-* *zIndex* - z-index of the images. Default: ```undefined```
+* *zIndex* - z-index of the overlay. Default: ```undefined```
 * *pane* - the name of the pane where the child div is inserted. Default: ```'overlayPane'``` 
-* *pointerEvents* - the pointer-events style for the overlayer. Default: ```null```
+* *pointerEvents* - the pointer-events style for the overlay. Default: ```null```
 * *errorImageUrl* - the url of the image displayed when the layer fails to load (invalid request or server error). Default: 1px transparent gif ```data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==```
 * *useCanvas* - use the canvas to render the images, fixes flickering issues with Firefox, doesn't work on IE8. Setting it to ```undefined``` will use canvas, if available. Default: ```undefined``` 
 
 The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels [here](http://176.95.37.29/SpatialTutorial/05-SymbolScaling.html), or on top of the vector shapes, like the labels [here](http://ptv-logistics.github.io/fl-labs/) or [here](https://api-eu-test.cloud.ptvgroup.com/CodeSampleBrowser/index.jsp#samples/data-rendering-geoJson/view).
 
-You can build your own NonTiledLayer by inheriting from NonTiledLayer and implementing either the function getImageUrl or getImageUrlAsync. The getImageUrl just returns an uri and is used by the WMS implementation. The getImageUrlAsync can be used for services that not only return images, but also additional context information for interaction. The project [here](https://github.com/ptv-logistics/Leaflet.PtvLayer) uses this method.
+You can build your own NonTiledLayer by inheriting from NonTiledLayer and implementing either the function getImageUrl or getImageUrlAsync. The getImageUrl just returns an uri and is used by the WMS implementation. The getImageUrlAsync can be used for services that not only return images, but also additional context information for interaction. The project [here](http://ptv-logistics.github.io/Leaflet.PtvLayer/) uses this method.

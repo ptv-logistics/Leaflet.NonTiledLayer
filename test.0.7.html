@@ -7,7 +7,7 @@
     <meta name="author" content="PTV Group">
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@0.7.7/dist/leaflet.css" />
     <style>
         body {
             padding: 0;
@@ -24,8 +24,9 @@
 
 <body>
     <div id="map" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
-    <script src="./dist/NonTiledLayer.js"></script>
+    <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.3/dist/NonTiledLayer.js"></script>
+    <!-- <script src="./dist/NonTiledLayer.js"></script> -->
 	<script src="./token.js"></script>
     <script>
         if(!window.token)
@@ -96,7 +97,7 @@
             format: 'image/png',
             transparent: true,
             attribution: 'terrestris'
-        }); //.addTo(map); // doesn't seem to work anymore - find another one
+        }).addTo(map); // doesn't seem to work anymore - find another one
 
         // insert airmass layer, at tile pane between background and labels
         var airmass = new L.NonTiledLayer.WMS("http://eumetview.eumetsat.int/geoserv/wms", {
@@ -118,7 +119,7 @@
             'Background': background,
             'Labels': labels,
             'POI': poi,
-//            'Bus Stops': busStops,
+            'Bus Stops': busStops,
             'Air Mass': airmass
         };
         L.control.layers({}, overlays, { autoZIndex: false }).addTo(map);
