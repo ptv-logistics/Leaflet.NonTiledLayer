@@ -7,6 +7,9 @@ var L = require('leaflet');
 
 L.NonTiledLayer = (L.Layer || L.Class).extend({
 	includes: L.Mixin.Events,
+
+	emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', //1px transparent GIF 
+
 	options: {
 		attribution: '',
 		opacity: 1.0,
@@ -14,10 +17,11 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		minZoom: 0,
 		maxZoom: 18,
 		pointerEvents: null,
-		errorImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', //1px transparent GIF
+		errorImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', //1px transparent GIF 
 		bounds: L.latLngBounds([-85.05, -180], [85.05, 180]),
 		useCanvas: undefined
 	},
+
 	key: '',
 
     // override this method in the inherited class
@@ -84,6 +88,8 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 	},
 
 	onRemove: function (map) {
+		if (L.version < '1.0') this._map.off(this.getEvents(), this);
+
 		this.getPane().removeChild(this._div);
 
 		if (this._useCanvas) {
@@ -104,13 +110,13 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 	_setZoom: function () {
 		if (this._useCanvas) {
 			if (this._currentCanvas._bounds)
-				this._resetImageScale(this._currentCanvas);
+				this._resetImageScale(this._currentCanvas, true);
 			if (this._bufferCanvas._bounds)
 				this._resetImageScale(this._bufferCanvas);
 		}
 		else {
 			if (this._currentImage._bounds)
-				this._resetImageScale(this._currentImage);
+				this._resetImageScale(this._currentImage, true);
 			if (this._bufferImage._bounds)
 				this._resetImageScale(this._bufferImage);
 		}
@@ -269,17 +275,18 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		image._lastScale = scale;
 	},
 
-	_resetImageScale: function (image) {
+	_resetImageScale: function (image, resetTransform) {
 		var bounds = new L.Bounds(
             this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
             this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
 			size = bounds.getSize(),
 			mSize = this._map.getSize();
 
-		var scale = size.x / mSize.x;
+		var scale = Math.max(size.x / mSize.x, size.y / mSize.y);
 		image._sscale = scale;
 
-		L.DomUtil.setTransform(image, bounds.min, scale);
+		if(resetTransform)
+			L.DomUtil.setTransform(image, bounds.min, scale);
 	},
 
 	_resetImage: function (image) {
@@ -328,15 +335,6 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 	},
 
 	_update: function () {
-		if (this._map.getZoom() < this.options.minZoom ||
-            this._map.getZoom() > this.options.maxZoom) {
-			this._div.style.visibility = 'hidden';
-			return;
-		}
-		else {
-			this._div.style.visibility = 'visible';
-		}
-
 		var bounds = this._getClippedBounds();
 
         // re-project to corresponding pixel bounds
@@ -346,10 +344,6 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
         // get pixel size
 		var width = pix2.x - pix1.x;
 		var height = pix2.y - pix1.y;
-
-        // resulting image is too small
-		if (width < 32 || height < 32)
-			return;
 
 		var i;
 		if (this._useCanvas) {
@@ -363,6 +357,8 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 			this._resetImage(this._currentCanvas);
 
 			i = this._currentCanvas._image;
+
+			L.DomUtil.setOpacity(i, 0);
 		} else {
             // set scales for zoom animation
 			this._bufferImage._scale = this._bufferImage._lastScale;
@@ -374,27 +370,33 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 			this._resetImage(this._currentImage);
 
 			i = this._currentImage;
+
+			L.DomUtil.setOpacity(i, 0);
+		}
+
+		if (this._map.getZoom() < this.options.minZoom ||
+            this._map.getZoom() > this.options.maxZoom ||
+			width < 32 || height < 32) {
+			this._div.style.visibility = 'hidden';
+			i.src = this.emptyImageUrl;
+			this.key = i.key = '<empty>';
+			i.tag = null;
+			return;
 		}
 
         // create a key identifying the current request
 		this.key = '' + bounds.getNorthWest() + ', ' + bounds.getSouthEast() + ', ' + width + ', ' + height;
 
-
 		if (this.getImageUrl) {
 			i.src = this.getImageUrl(bounds, width, height);
 			i.key = this.key;
 		}
-		else
-            this.getImageUrlAsync(bounds, width, height, this.key, function (key, url, tag) {
-	i.key = key;
-	i.src = url;
-	i.tag = tag;
-});
-
-		if (this._useCanvas) {
-			L.DomUtil.setOpacity(this._currentCanvas, 0);
-		} else {
-			L.DomUtil.setOpacity(this._currentImage, 0);
+		else {
+			 this.getImageUrlAsync(bounds, width, height, this.key, function (key, url, tag) {
+				i.key = key;
+				i.src = url;
+				i.tag = tag;
+			});
 		}
 	},
 	_onImageError: function (e) {
@@ -402,7 +404,6 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		L.DomUtil.addClass(e.target, 'invalid');
 		if (e.target.src !== this.options.errorImageUrl) { // prevent error loop if error image is not valid
 			e.target.src = this.options.errorImageUrl;
-			this._onImageDone(false, e);
 		}
 	},
 	_onImageLoad: function (e) {
@@ -411,12 +412,14 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 			if (!e.target.key || e.target.key !== this.key) { // obsolete / outdated image
 				return;
 			}
-			this._onImageDone(true, e);
 		}
+		this._onImageDone(e);
+
+		this.fire('load', e);
 	},
-	_onImageDone: function (success, e) {
+	_onImageDone: function (e) {
 		if (this._useCanvas) {
-			this._render(e);
+			this._renderCanvas(e);
 		} else {
 			L.DomUtil.setOpacity(this._currentImage, 1);
 			L.DomUtil.setOpacity(this._bufferImage, 0);
@@ -427,11 +430,12 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 			var tmp = this._bufferImage;
 			this._bufferImage = this._currentImage;
 			this._currentImage = tmp;
-
-			this.fire('load', e);
 		}
+
+		if(e.target.key !== '<empty>')
+			this._div.style.visibility = 'visible';
 	},
-	_render: function (e) {
+	_renderCanvas: function (e) {
 		var ctx = this._currentCanvas.getContext('2d');
 
 		ctx.drawImage(this._currentCanvas._image, 0, 0);
@@ -445,8 +449,6 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		var tmp = this._bufferCanvas;
 		this._bufferCanvas = this._currentCanvas;
 		this._currentCanvas = tmp;
-
-		this.fire('load', e);
 	}
 
 });
