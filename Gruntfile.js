@@ -23,7 +23,8 @@ module.exports = function(grunt) {
 		uglify: {
 			options: {
 				banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-				'<%= grunt.template.today("yyyy-mm-dd") %> */\n\n'
+				'<%= grunt.template.today("yyyy-mm-dd") %> */\n\n',
+				sourceMap: 'dist/NonTiledLayer-src.js'
 			},
 			build: {
 				src: 'dist/NonTiledLayer-src.js',

@@ -7,83 +7,83 @@ var L = require('leaflet');
 
 L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 
-    defaultWmsParams: {
-        service: 'WMS',
-        request: 'GetMap',
-        version: '1.1.1',
-        layers: '',
-        styles: '',
-        format: 'image/jpeg',
-        transparent: false
-    },
+	defaultWmsParams: {
+		service: 'WMS',
+		request: 'GetMap',
+		version: '1.1.1',
+		layers: '',
+		styles: '',
+		format: 'image/jpeg',
+		transparent: false
+	},
 
-    options: {
-        crs: null,
-        uppercase: false
-    },
+	options: {
+		crs: null,
+		uppercase: false
+	},
 
-    initialize: function (url, options) { // (String, Object)
-        this._wmsUrl = url;
+	initialize: function (url, options) { // (String, Object)
+		this._wmsUrl = url;
 
-        var wmsParams = L.extend({}, this.defaultWmsParams);
+		var wmsParams = L.extend({}, this.defaultWmsParams);
 		
 		// all keys that are not NonTiledLayer options go to WMS params
 		for (var i in options) {
 			if (!L.NonTiledLayer.prototype.options.hasOwnProperty(i) && 
                 !(L.Layer && L.Layer.prototype.options.hasOwnProperty(i))) {
-				wmsParams[i] = options[i];
-			}
+			wmsParams[i] = options[i];
+		}
 		}
 
-        this.wmsParams = wmsParams;
+		this.wmsParams = wmsParams;
 
-        L.setOptions(this, options);
-    },
+		L.setOptions(this, options);
+	},
 
-    onAdd: function (map) {
+	onAdd: function (map) {
 
-        this._crs = this.options.crs || map.options.crs;
-        this._wmsVersion = parseFloat(this.wmsParams.version);
+		this._crs = this.options.crs || map.options.crs;
+		this._wmsVersion = parseFloat(this.wmsParams.version);
 
-        var projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
-        this.wmsParams[projectionKey] = this._crs.code;
+		var projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
+		this.wmsParams[projectionKey] = this._crs.code;
 
-        L.NonTiledLayer.prototype.onAdd.call(this, map);
-    },
+		L.NonTiledLayer.prototype.onAdd.call(this, map);
+	},
 
-    getImageUrl: function (bounds, width, height) {
-        var wmsParams = this.wmsParams;
-        wmsParams.width = width;
-        wmsParams.height = height;
+	getImageUrl: function (bounds, width, height) {
+		var wmsParams = this.wmsParams;
+		wmsParams.width = width;
+		wmsParams.height = height;
 
-        var nw = this._crs.project(bounds.getNorthWest());
-        var se = this._crs.project(bounds.getSouthEast());
+		var nw = this._crs.project(bounds.getNorthWest());
+		var se = this._crs.project(bounds.getSouthEast());
 
-        var url = this._wmsUrl;
+		var url = this._wmsUrl;
 
-        var bbox = bbox = (this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326 ?
+		var bbox = bbox = (this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326 ?
         [se.y, nw.x, nw.y, se.x] :
         [nw.x, se.y, se.x, nw.y]).join(',');
 
-        return url +
+		return url +
 			L.Util.getParamString(this.wmsParams, url, this.options.uppercase) +
 			(this.options.uppercase ? '&BBOX=' : '&bbox=') + bbox;
-    },
+	},
 
-    setParams: function (params, noRedraw) {
+	setParams: function (params, noRedraw) {
 
-        L.extend(this.wmsParams, params);
+		L.extend(this.wmsParams, params);
 
-        if (!noRedraw) {
-            this.redraw();
-        }
+		if (!noRedraw) {
+			this.redraw();
+		}
 
-        return this;
-    }
+		return this;
+	}
 });
 
 L.nonTiledLayer.wms = function (url, options) {
-    return new L.NonTiledLayer.WMS(url, options);
+	return new L.NonTiledLayer.WMS(url, options);
 };
 
 module.exports = L.NonTiledLayer.WMS;
