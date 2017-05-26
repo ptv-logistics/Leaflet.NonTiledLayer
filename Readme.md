@@ -28,7 +28,7 @@ http://ptv-logistics.github.io/Leaflet.NonTiledLayer/test.0.7.html
 
 ```npm install``` 
 
-or use the latest bulid at https://unpkg.com/leaflet.nontiledlayer/dist/
+or use the latest build at https://unpkg.com/leaflet.nontiledlayer/dist/
 
 ## The supported options
 
