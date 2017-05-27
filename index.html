@@ -25,12 +25,14 @@
 <body>
     <div id="map" />
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.4/dist/NonTiledLayer.js"></script>
+    <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.5/dist/NonTiledLayer.js"></script>
     <!-- <script src="./dist/NonTiledLayer.js"></script> -->
     <script src="./token.js"></script>
     <script>
-        if(!window.token)
+        if(!window.token) {
             alert("You need an xServer-internet token to run this demo");
+            window.token = "";
+        }
 
         // initialize leaflet
         var map = L.map('map', {

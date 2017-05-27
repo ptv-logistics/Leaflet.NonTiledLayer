@@ -271,7 +271,6 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 			L.DomUtil.setTransform(image, topLeft, scale);
 		}
 
-
 		image._lastScale = scale;
 	},
 
@@ -279,14 +278,13 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		var bounds = new L.Bounds(
             this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
             this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
-			size = bounds.getSize(),
-			mSize = this._map.getSize();
+			orgSize = image._orgBounds.getSize().y,
+			scaledSize =  bounds.getSize().y;
 
-		var scale = Math.max(size.x / mSize.x, size.y / mSize.y);
+		var scale = scaledSize / orgSize;
 		image._sscale = scale;
 
-		if(resetTransform)
-			L.DomUtil.setTransform(image, bounds.min, scale);
+		L.DomUtil.setTransform(image, bounds.min, scale);
 	},
 
 	_resetImage: function (image) {
@@ -296,6 +294,8 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 			size = bounds.getSize();
 
 		L.DomUtil.setPosition(image, bounds.min);
+
+		image._orgBounds = bounds;
 		image._sscale = 1;
 
 		if (this._useCanvas) {
