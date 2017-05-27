@@ -31,8 +31,8 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 		for (var i in options) {
 			if (!L.NonTiledLayer.prototype.options.hasOwnProperty(i) && 
                 !(L.Layer && L.Layer.prototype.options.hasOwnProperty(i))) {
-			wmsParams[i] = options[i];
-		}
+				wmsParams[i] = options[i];
+			}
 		}
 
 		this.wmsParams = wmsParams;
