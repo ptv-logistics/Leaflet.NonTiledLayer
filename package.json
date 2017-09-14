@@ -1,6 +1,6 @@
 {
   "name": "leaflet.nontiledlayer",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A leaflet layer for non-tiled overlays",
   "files": ["dist"],
   "main": "dist/NonTiledLayer-src.js",
