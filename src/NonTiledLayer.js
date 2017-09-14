@@ -6,7 +6,7 @@
 var L = require('leaflet');
 
 L.NonTiledLayer = (L.Layer || L.Class).extend({
-	includes: L.Mixin.Events,
+	includes: L.Evented || L.Mixin.Events,
 
 	emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', //1px transparent GIF 
 

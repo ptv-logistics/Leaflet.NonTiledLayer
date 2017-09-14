@@ -7,7 +7,7 @@
     <meta name="author" content="PTV Group">
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
     <style>
         body {
             padding: 0;
@@ -24,13 +24,13 @@
 
 <body>
     <div id="map" />
-    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.5/dist/NonTiledLayer.js"></script>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.6/dist/NonTiledLayer.js"></script>
     <!-- <script src="./dist/NonTiledLayer.js"></script> -->
     <script src="./token.js"></script>
     <script>
         if(!window.token) {
-            alert("You need an xServer-internet token to run this demo");
+            alert("You need an xServer-internet token to display all layers!");
             window.token = "";
         }
 
