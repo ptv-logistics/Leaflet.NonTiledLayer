@@ -384,9 +384,12 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 			return;
 		}
 
+		// fire loading event
+		this.fire('loading');
+		
         // create a key identifying the current request
 		this.key = '' + bounds.getNorthWest() + ', ' + bounds.getSouthEast() + ', ' + width + ', ' + height;
-
+		
 		if (this.getImageUrl) {
 			i.src = this.getImageUrl(bounds, width, height);
 			i.key = this.key;
