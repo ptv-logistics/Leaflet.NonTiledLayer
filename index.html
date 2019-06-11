@@ -37,9 +37,9 @@
         // initialize leaflet
         var map = L.map('map', {
             worldCopyJump: true,
+            zoomDelta: 0.5, // test for fractional zoom
             zoomSnap: 0.25,
-            zoomDelta: 0.5,
-            wheelPxPerZoomLevel: 50
+            wheelPxPerZoomLevel: 50 
             //, crs:L.CRS.EPSG4326 // test for Plate Carree projection
         });
         
@@ -51,7 +51,7 @@
         map.setView(L.latLng(49.01, 8.4), 16.5);
 
         // using the xserver-internet WMS adapter
-        var xMapWmsUrl = 'https://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=' + token;
+        var xMapWmsUrl = 'https://xmap-eu-n-test.cloud.ptvgroup.com/WMS/WMS?xtok=' + token;
         var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, TOMTOM';
 
         // add (tiled) background layer
@@ -77,14 +77,14 @@
             transparent: true,
             attribution: xMapAttribution,
             pane: 'tilePane',
-            zIndex:3
+            zIndex:4
         }).addTo(map);
 
         // add pois. Default - insert at overlayPane
         var poi = L.nonTiledLayer.wms(xMapWmsUrl, {
             maxZoom: 19,
             minZoom: 16,
-            zIndex: 1, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
+            zIndex: 5, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
             opacity: 1.0,
             layers: 'xmap-poi',
             format: 'image/png',
@@ -93,15 +93,16 @@
         }).addTo(map);
 
         // add bus stops. Default - insert at overlayPane
-        var busStops = L.nonTiledLayer.wms('http://ows.terrestris.de/osm-haltestellen', {
+        var contour = L.nonTiledLayer.wms('https://ows.terrestris.de/osm/service', {
             maxZoom: 19,
-            minZoom: 14,
+            minZoom: 4,
             zIndex: 2, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
             opacity: 1.0,
-            layers: 'OSM-Bushaltestellen',
+            layers: 'SRTM30-Contour',
             format: 'image/png',
             transparent: true,
-            attribution: 'terrestris'
+            attribution: 'terrestris',
+            bounds: L.latLngBounds([-56.0, -180], [60.0, 180])
         }).addTo(map); 
 
         // insert airmass layer, at tile pane between background and labels
@@ -115,8 +116,8 @@
             opacity: 0.75,
             pane: 'tilePane',
             format: 'image/png',
-            zIndex: 2,
-            bounds: L.latLngBounds([-77.0,77.0], [77.0,-77.0])
+            zIndex: 3,
+            bounds: L.latLngBounds([-77.0,-77.0], [77.0,77.0])
         }).addTo(map);
 
         // add layer selector
@@ -124,7 +125,7 @@
             'Background': background,
             'Labels': labels,
             'POI': poi,
-            'Bus Stops': busStops,
+            'Contour Lines': contour,
             'Air Mass': airmass
         };
         L.control.layers({}, overlays, { autoZIndex: false }).addTo(map);
