@@ -36,7 +36,7 @@ or use the latest build at https://unpkg.com/leaflet.nontiledlayer/dist/
 * *opacity* - the opacity value between 0.0 and 1.0. Default: ```1.0```
 * *minZoom* - the minimum zoom level for which the overlay is requested. Default: ```0```
 * *maxZoom* - the maximum zoom level for which the overlay is requested. Default: ```18```
-* *bounds* - the geographic bounds of the layer. Default: ```L.latLngBounds([-180, -85.05], [180, 85.05])```
+* *bounds* - the geographic bounds of the layer. Default: ```L.latLngBounds([-85.05, -180], [85.05, 180])```
 * *zIndex* - z-index of the overlay. Default: ```undefined```
 * *pane* - the name of the pane where the child div is inserted. Default: ```'overlayPane'``` 
 * *pointerEvents* - the pointer-events style for the overlay. Default: ```null```
