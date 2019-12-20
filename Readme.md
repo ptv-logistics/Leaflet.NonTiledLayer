@@ -42,6 +42,7 @@ or use the latest build at https://unpkg.com/leaflet.nontiledlayer/dist/
 * *pointerEvents* - the pointer-events style for the overlay. Default: ```null```
 * *errorImageUrl* - the url of the image displayed when the layer fails to load (invalid request or server error). Default: 1px transparent gif ```data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==```
 * *useCanvas* - use the canvas to render the images, fixes flickering issues with Firefox, doesn't work on IE8. Setting it to ```undefined``` will use canvas, if available. Default: ```undefined``` 
+* *detectRetina* - doubles the actual image size requested, if the Browser is in retina mode. Default: ```false```
 
 The pane and zIndex properties allow to fine-tune the layer ordering. For example, it is possible to insert a NonTiledLayer between two layers the tilePane, like the labels [here](http://176.95.37.29/coveragedemo/), or on top of the vector shapes, like the labels [here](https://ptv-logistics.github.io/fl-labs/) or [here](https://api-eu-test.cloud.ptvgroup.com/CodeSampleBrowser/index.jsp#samples/data-rendering-geoJson/view).
 
