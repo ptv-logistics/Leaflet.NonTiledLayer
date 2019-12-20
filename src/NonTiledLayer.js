@@ -19,7 +19,8 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		pointerEvents: null,
 		errorImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', //1px transparent GIF 
 		bounds: L.latLngBounds([-85.05, -180], [85.05, 180]),
-		useCanvas: undefined
+		useCanvas: undefined,
+		detectRetina: false		
 	},
 
 	key: '',
@@ -334,6 +335,10 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		return new L.LatLngBounds(world1, world2);
 	},
 
+	_getImageScale: function () {
+		return this.options.detectRetina && L.Browser.retina ? 2 : 1;
+	},
+
 	_update: function () {
 		var bounds = this._getClippedBounds();
 
@@ -387,6 +392,9 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		// fire loading event
 		this.fire('loading');
 		
+		width = width * this._getImageScale();
+		height = height * this._getImageScale();
+
         // create a key identifying the current request
 		this.key = '' + bounds.getNorthWest() + ', ' + bounds.getSouthEast() + ', ' + width + ', ' + height;
 		
@@ -441,7 +449,8 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 	_renderCanvas: function (e) {
 		var ctx = this._currentCanvas.getContext('2d');
 
-		ctx.drawImage(this._currentCanvas._image, 0, 0);
+		ctx.drawImage(this._currentCanvas._image, 0, 0, 
+			this._currentCanvas.width, this._currentCanvas.height);
 
 		L.DomUtil.setOpacity(this._currentCanvas, 1);
 		L.DomUtil.setOpacity(this._bufferCanvas, 0);
