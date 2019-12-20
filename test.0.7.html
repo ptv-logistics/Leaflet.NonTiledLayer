@@ -25,7 +25,7 @@
 <body>
     <div id="map" />
     <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.7/dist/NonTiledLayer.js"></script>
+    <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.8/dist/NonTiledLayer.js"></script>
     <!-- <script src="./dist/NonTiledLayer.js"></script> -->
     <script src="./token.js"></script>
     <script>
@@ -89,17 +89,19 @@
             attribution: xMapAttribution
         }).addTo(map);
 
-        // add bus stops. Default - insert at overlayPane
-        var busStops = L.nonTiledLayer.wms('http://ows.terrestris.de/osm-haltestellen', {
+        // add contours, on tile pane
+        var contour = L.nonTiledLayer.wms('https://ows.terrestris.de/osm/service', {
             maxZoom: 19,
-            minZoom: 14,
+            minZoom: 4,
             zIndex: 2, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
             opacity: 1.0,
-            layers: 'OSM-Bushaltestellen',
+            layers: 'SRTM30-Contour',
             format: 'image/png',
             transparent: true,
-            attribution: 'terrestris'
-        }).addTo(map); // doesn't seem to work anymore - find another one
+            attribution: 'terrestris',
+            pane: map.getPanes().tilePane,
+            bounds: L.latLngBounds([-56.0, -180], [60.0, 180])
+        }).addTo(map); 
 
         // insert airmass layer, at tile pane between background and labels
         var airmass = L.nonTiledLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
@@ -112,8 +114,9 @@
             opacity: 0.75,
             pane: map.getPanes().tilePane,
             format: 'image/png',
-            zIndex: 2,
-            bounds: L.latLngBounds([-77.0,77.0], [77.0,-77.0])
+            zIndex: 3,
+            bounds: L.latLngBounds([-77.0,77.0], [77.0,-77.0]),
+            detectRetina: true // double the requested image size
         }).addTo(map);
 
         // add layer selector
