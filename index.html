@@ -7,7 +7,7 @@
     <meta name="author" content="PTV Group">
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
     <style>
         body {
             padding: 0;
@@ -24,9 +24,9 @@
 
 <body>
     <div id="map" />
-    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
-    <!-- <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.7/dist/NonTiledLayer.js"></script> -->
-    <script src="./dist/NonTiledLayer-src.js"></script>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.8/dist/NonTiledLayer.js"></script>
+    <!-- <script src="./dist/NonTiledLayer-src.js"></script> -->
     <script src="./token.js"></script>
     <script>
         if(!window.token) {
@@ -51,7 +51,7 @@
         map.setView(L.latLng(49.01, 8.4), 16.5);
 
         // using the xserver-internet WMS adapter
-        var xMapWmsUrl = 'https://xmap-eu-n-test.cloud.ptvgroup.com/WMS/WMS?xtok=' + token;
+        var xMapWmsUrl = 'https://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=' + token;
         var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, TOMTOM';
 
         // add (tiled) background layer
@@ -92,7 +92,7 @@
             attribution: xMapAttribution
         }).addTo(map);
 
-        // add bus stops. Default - insert at overlayPane
+        // add contours, on tile pane
         var contour = L.nonTiledLayer.wms('https://ows.terrestris.de/osm/service', {
             maxZoom: 19,
             minZoom: 4,
@@ -102,6 +102,7 @@
             format: 'image/png',
             transparent: true,
             attribution: 'terrestris',
+            pane: 'tilePane',
             bounds: L.latLngBounds([-56.0, -180], [60.0, 180])
         }).addTo(map); 
 
@@ -118,7 +119,7 @@
             format: 'image/png',
             zIndex: 3,
             bounds: L.latLngBounds([-77.0,-77.0], [77.0,77.0]),
-            detectRetina: true
+            detectRetina: true // double the requested image size
         }).addTo(map);
 
         // add layer selector
