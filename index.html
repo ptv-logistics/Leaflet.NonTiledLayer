@@ -7,7 +7,7 @@
     <meta name="author" content="PTV Group">
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         body {
             padding: 0;
@@ -24,7 +24,7 @@
 
 <body>
     <div id="map" />
-    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.8/dist/NonTiledLayer.js"></script>
     <!-- <script src="./dist/NonTiledLayer-src.js"></script> -->
     <script src="./token.js"></script>
@@ -52,7 +52,7 @@
 
         // using the xserver-internet WMS adapter
         var xMapWmsUrl = 'https://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=' + token;
-        var xMapAttribution = '<a href="http://www.ptvgroup.com">PTV<\/a>, TOMTOM';
+        var xMapAttribution = '<a href="https://www.ptvgroup.com">PTV<\/a>, TOMTOM';
 
         // add (tiled) background layer
         var background = L.tileLayer.wms(xMapWmsUrl, {
@@ -107,7 +107,7 @@
         }).addTo(map); 
 
         // insert airmass layer, at tile pane between background and labels
-        var airmass = L.nonTiledLayer.wms("http://eumetview.eumetsat.int/geoserv/wms", {
+        var airmass = L.nonTiledLayer.wms("https://eumetview.eumetsat.int/geoserv/wms", {
             maxZoom: 8,
             minZoom: 0,
             layers: 'meteosat:msg_eview',
