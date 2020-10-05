@@ -17,7 +17,7 @@ You can see a demo here:
 
 https://ptv-logistics.github.io/Leaflet.NonTiledLayer/index.html
 
-It uses the WMS service of [PTV xServer internet](http://xserver.ptvgroup.com/en-uk/cookbook/home/), which requires a tiled/non-tiled hybrid approach (and that is the reason we've built this).
+It uses the WMS service of [PTV xServer internet](https://www.ptvgroup.com/en/solutions/products/ptv-xserver/), which requires a tiled/non-tiled hybrid approach (and that is the reason we've built this).
 The sample also displays some 3rd-party WMS overlays that also cannot be requested in tiles.
 
 The layer supports both Leaflet 0.7.x and Leaflet 1.0.x. The demo for 0.7 can be viewed here:
