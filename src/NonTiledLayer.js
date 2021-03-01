@@ -188,6 +188,10 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		_canvas._image = new Image();
 		this._ctx = _canvas.getContext('2d');
 
+		if (!!this.options.crossOrigin) {
+			_canvas._image.crossOrigin = this.options.crossOrigin;
+		}
+
 		if (this._map.options.zoomAnimation && L.Browser.any3d) {
 			L.DomUtil.addClass(_canvas, 'leaflet-zoom-animated');
 		} else {
