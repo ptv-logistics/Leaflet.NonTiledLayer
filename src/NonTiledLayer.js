@@ -209,6 +209,10 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 	_initImage: function () {
 		var _image = L.DomUtil.create('img', 'leaflet-image-layer');
 
+		if (!!this.options.crossOrigin) {
+			_image.crossOrigin = this.options.crossOrigin;
+		}
+		
 		this._div.appendChild(_image);
 
 		if (this._map.options.zoomAnimation && L.Browser.any3d) {
