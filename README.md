@@ -24,11 +24,21 @@ The layer supports both Leaflet 0.7.x and Leaflet 1.0.x. The demo for 0.7 can be
 
 https://ptv-logistics.github.io/Leaflet.NonTiledLayer/test.0.7.html
 
-## How to build
+## Installation
 
-```npm install``` 
+Install using [`npm`](https://www.npmjs.com/package/leaflet.nontiledlayer):
 
-or use the latest build at https://unpkg.com/leaflet.nontiledlayer/dist/
+```bash
+npm install leaflet.nontiledlayer
+```
+
+Or [`yarn`](https://yarnpkg.com/en/package/leaflet.nontiledlayer):
+
+```bash
+yarn add leaflet.nontiledlayer
+```
+
+Or use the latest build at https://unpkg.com/leaflet.nontiledlayer/dist/
 
 ## The supported options
 
