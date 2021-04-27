@@ -1,7 +1,7 @@
 /*
  * L.NonTiledLayer.WMS is used for putting WMS non tiled layers on the map.
  */
-"use strict";
+'use strict';
 
 var L = require('leaflet');
 
@@ -62,8 +62,8 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 		var url = this._wmsUrl;
 
 		var bbox = bbox = (this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326 ?
-        [se.y, nw.x, nw.y, se.x] :
-        [nw.x, se.y, se.x, nw.y]).join(',');
+			[se.y, nw.x, nw.y, se.x] :
+			[nw.x, se.y, se.x, nw.y]).join(',');
 
 		return url +
 			L.Util.getParamString(this.wmsParams, url, this.options.uppercase) +
