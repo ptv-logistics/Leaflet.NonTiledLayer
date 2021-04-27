@@ -14,7 +14,8 @@
     "url": "git://github.com/ptv-logistics/Leaflet.NonTiledLayer.git"
   },
   "scripts": {
-    "prepublish": "grunt",
+    "prepublishOnly": "npm run build",
+    "build": "grunt",
     "lint": "eslint ."
   },
   "keywords": [
