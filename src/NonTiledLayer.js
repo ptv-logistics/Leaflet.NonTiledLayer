@@ -1,7 +1,7 @@
 /*
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
  */
-"use strict";
+'use strict';
 
 var L = require('leaflet');
 
@@ -25,9 +25,9 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 
 	key: '',
 
-    // override this method in the inherited class
-    //getImageUrl: function (bounds, width, height) {},
-    //getImageUrlAsync: function (bounds, width, height, f) {},
+	// override this method in the inherited class
+	//getImageUrl: function (bounds, width, height) {},
+	//getImageUrlAsync: function (bounds, width, height, f) {},
 
 	initialize: function (options) {
 		L.setOptions(this, options);
@@ -36,7 +36,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 	onAdd: function (map) {
 		this._map = map;
 
-        // don't animate on browsers without hardware-accelerated transitions or old Android/Opera
+		// don't animate on browsers without hardware-accelerated transitions or old Android/Opera
 		if (typeof this._zoomAnimated == 'undefined') // Leaflet 0.7
 			this._zoomAnimated = L.DomUtil.TRANSITION && L.Browser.any3d && !L.Browser.mobileOpera && this._map.options.zoomAnimation;
 
@@ -132,8 +132,8 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 			events.zoomanim = this._animateZoom;
 		}
 
-        // fix: no zoomanim for pinch with Leaflet 1.0!
-		if(L.version >= '1.0') {
+		// fix: no zoomanim for pinch with Leaflet 1.0!
+		if (L.version >= '1.0') {
 			events.zoom = this._setZoom;
 		}
 
@@ -162,7 +162,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		return this;
 	},
 
-    // TODO remove bringToFront/bringToBack duplication from TileLayer/Path
+	// TODO remove bringToFront/bringToBack duplication from TileLayer/Path
 	bringToFront: function () {
 		if (this._div) {
 			this.getPane().appendChild(this._div);
@@ -222,7 +222,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		}
 
 
-        //TODO createImage util method to remove duplication
+		//TODO createImage util method to remove duplication
 		L.extend(_image, {
 			galleryimg: 'no',
 			onselectstart: L.Util.falseFn,
@@ -285,8 +285,8 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 
 	_resetImageScale: function (image, resetTransform) {
 		var bounds = new L.Bounds(
-            this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
-            this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
+				this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
+				this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
 			orgSize = image._orgBounds.getSize().y,
 			scaledSize =  bounds.getSize().y;
 
@@ -298,8 +298,8 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 
 	_resetImage: function (image) {
 		var bounds = new L.Bounds(
-            this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
-            this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
+				this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
+				this._map.latLngToLayerPoint(image._bounds.getSouthEast())),
 			size = bounds.getSize();
 
 		L.DomUtil.setPosition(image, bounds.min);
@@ -320,7 +320,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 	_getClippedBounds: function () {
 		var wgsBounds = this._map.getBounds();
 
-        // truncate bounds to valid wgs bounds
+		// truncate bounds to valid wgs bounds
 		var mSouth = wgsBounds.getSouth();
 		var mNorth = wgsBounds.getNorth();
 		var mWest = wgsBounds.getWest();
@@ -331,7 +331,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		var lWest = this.options.bounds.getWest();
 		var lEast = this.options.bounds.getEast();
 
-        //mWest = (mWest + 180) % 360 - 180;
+		//mWest = (mWest + 180) % 360 - 180;
 		if (mSouth < lSouth) mSouth = lSouth;
 		if (mNorth > lNorth) mNorth = lNorth;
 		if (mWest < lWest) mWest = lWest;
@@ -350,17 +350,17 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 	_update: function () {
 		var bounds = this._getClippedBounds();
 
-        // re-project to corresponding pixel bounds
+		// re-project to corresponding pixel bounds
 		var pix1 = this._map.latLngToContainerPoint(bounds.getNorthWest());
 		var pix2 = this._map.latLngToContainerPoint(bounds.getSouthEast());
 
-        // get pixel size
+		// get pixel size
 		var width = pix2.x - pix1.x;
 		var height = pix2.y - pix1.y;
 
 		var i;
 		if (this._useCanvas) {
-            // set scales for zoom animation
+			// set scales for zoom animation
 			this._bufferCanvas._scale = this._bufferCanvas._lastScale;
 			this._currentCanvas._scale = this._currentCanvas._lastScale = 1;
 			this._bufferCanvas._sscale = 1;
@@ -373,7 +373,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 
 			L.DomUtil.setOpacity(i, 0);
 		} else {
-            // set scales for zoom animation
+			// set scales for zoom animation
 			this._bufferImage._scale = this._bufferImage._lastScale;
 			this._currentImage._scale = this._currentImage._lastScale = 1;
 			this._bufferImage._sscale = 1;
@@ -403,7 +403,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 		width = width * this._getImageScale();
 		height = height * this._getImageScale();
 
-        // create a key identifying the current request
+		// create a key identifying the current request
 		this.key = '' + bounds.getNorthWest() + ', ' + bounds.getSouthEast() + ', ' + width + ', ' + height;
 		
 		if (this.getImageUrl) {
@@ -451,7 +451,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 			this._currentImage = tmp;
 		}
 
-		if(e.target.key !== '<empty>')
+		if (e.target.key !== '<empty>')
 			this._div.style.visibility = 'visible';
 	},
 	_renderCanvas: function (e) {
