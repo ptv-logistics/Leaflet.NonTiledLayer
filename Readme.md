@@ -1,6 +1,6 @@
 # Leaflet.NonTiledLayer 
 
-[![Build status](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer.svg)](https://travis-ci.org/ptv-logistics/Leaflet.NonTiledLayer)
+[![Build status](https://github.com/ptv-logistics/Leaflet.NonTiledLayer/workflows/CI/badge.svg)](https://github.com/ptv-logistics/Leaflet.NonTiledLayer/actions/workflows/ci.yml)
 [![NPM version](https://img.shields.io/npm/v/leaflet.nontiledlayer.svg)](https://www.npmjs.com/package/leaflet.nontiledlayer)
 ![Leaflet compatible!](https://img.shields.io/badge/Leaflet-0.7.x%2F1.x-blue.svg?style=flat)
 
