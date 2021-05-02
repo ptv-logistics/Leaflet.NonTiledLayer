@@ -3,7 +3,7 @@ module.exports = function (grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 		browserify: {
 			control: {
-				src: ['src/NonTiledLayer.js', 'src/NonTiledLayer.WMS.js'],
+				src: 'src/NonTiledLayer.js',
 				dest: 'dist/NonTiledLayer-src.js',
 				options: {
 					transform: [
