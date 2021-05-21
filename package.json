@@ -15,7 +15,7 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "build": "grunt",
+    "build": "rimraf dist && rollup --config",
     "lint": "eslint ."
   },
   "keywords": [
@@ -32,25 +32,19 @@
     "url": "https://github.com/ptv-logistics/Leaflet.NonTiledLayer/issues"
   },
   "homepage": "https://github.com/ptv-logistics/Leaflet.NonTiledLayer",
-  "browserify": {
-    "transform": [
-      "browserify-shim"
-    ]
-  },
-  "browserify-shim": {
-    "leaflet": "global:L"
-  },
   "dependencies": {
     "leaflet": "^1.6.0"
   },
   "devDependencies": {
-    "browserify": "^17.0.0",
-    "browserify-shim": "^3.8.12",
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@rollup/plugin-typescript": "^8.2.1",
     "eslint": "^7.25.0",
     "eslint-plugin-html": "^6.1.2",
-    "grunt": "^1.0.4",
-    "grunt-browserify": "^6.0.0",
-    "grunt-cli": "^1.2.0",
-    "grunt-contrib-uglify": "^5.0.1"
+    "rimraf": "^3.0.2",
+    "rollup": "^2.48.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.4"
   }
 }

@@ -1,11 +1,9 @@
+import * as L from 'leaflet'
+
 /*
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
  */
-'use strict';
-
-var L = require('leaflet');
-
-L.NonTiledLayer = (L.Layer || L.Class).extend({
+var NonTiledLayer = (L.Layer || L.Class).extend({
 	includes: L.Evented || L.Mixin.Events,
 
 	emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', //1px transparent GIF 
@@ -124,7 +122,7 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 	},
     
 	getEvents: function () {
-		var events = {
+		var events: any = {
 			moveend: this._update
 		};
 
@@ -474,13 +472,13 @@ L.NonTiledLayer = (L.Layer || L.Class).extend({
 });
 
 L.nonTiledLayer = function () {
-	return new L.NonTiledLayer();
+	return new NonTiledLayer();
 };
 
 /*
  * L.NonTiledLayer.WMS is used for putting WMS non tiled layers on the map.
  */
-L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
+NonTiledLayer.WMS = NonTiledLayer.extend({
 
 	defaultWmsParams: {
 		service: 'WMS',
@@ -504,7 +502,7 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 		
 		// all keys that are not NonTiledLayer options go to WMS params
 		for (var i in options) {
-			if (!L.NonTiledLayer.prototype.options.hasOwnProperty(i) && 
+			if (!NonTiledLayer.prototype.options.hasOwnProperty(i) && 
                 !(L.Layer && L.Layer.prototype.options.hasOwnProperty(i))) {
 				wmsParams[i] = options[i];
 			}
@@ -523,7 +521,7 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 		var projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
 		this.wmsParams[projectionKey] = this._crs.code;
 
-		L.NonTiledLayer.prototype.onAdd.call(this, map);
+		NonTiledLayer.prototype.onAdd.call(this, map);
 	},
 
 	getImageUrl: function (bounds, width, height) {
@@ -558,7 +556,7 @@ L.NonTiledLayer.WMS = L.NonTiledLayer.extend({
 });
 
 L.nonTiledLayer.wms = function (url, options) {
-	return new L.NonTiledLayer.WMS(url, options);
+	return new NonTiledLayer.WMS(url, options);
 };
 
-module.exports = L.NonTiledLayer;
+export default NonTiledLayer;
