@@ -1,5 +1,9 @@
 {
   "ignorePatterns": ["dist/"],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
   "rules": {
     "camelcase": "error",
     "quotes": ["error", "single"],
