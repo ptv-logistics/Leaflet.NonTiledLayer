@@ -1,38 +1,13 @@
 {
-  "ignorePatterns": ["dist/"],
+  "root": true,
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 2020,
-    "sourceType": "module"
-  },
-  "rules": {
-    "camelcase": "error",
-    "quotes": ["error", "single"],
-    "no-mixed-spaces-and-tabs": ["error", "smart-tabs"],
-    "space-before-function-paren": "error",
-    "space-in-parens": "error",
-    "object-curly-spacing": "error",
-    "array-bracket-spacing": "error",
-    "space-before-blocks": "error",
-    "keyword-spacing": "error",
-    "no-lonely-if": "error",
-    "comma-style": "error",
-    "indent": ["error", "tab"],
-    "no-underscore-dangle": "off",
-    "no-constant-condition": "off",
-    "no-multi-spaces": "off",
-    "strict": "off",
-    "key-spacing": "off",
-    "no-shadow": "off"
-  },
-  "globals": {
-    "L": true,
-    "module": false,
-    "define": false
-  },
-  "env": {
-    "browser": true
+    "project": "./tsconfig.json"
   },
   "plugins": [
-    "html"
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "airbnb-typescript/base"
   ]
 }
