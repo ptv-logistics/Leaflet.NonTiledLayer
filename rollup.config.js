@@ -3,6 +3,7 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 import {terser} from 'rollup-plugin-terser';
 
+/** @type {import('rollup').OutputOptions} */
 const outputConfig = {
 	name: 'L.NonTiledLayer',
 	format: 'umd',
@@ -12,7 +13,8 @@ const outputConfig = {
 	}
 };
 
-export default {
+/** @type {import('rollup').RollupOptions} */
+const config = {
 	external: ['leaflet'],
 	input: 'src/NonTiledLayer.ts',
 	plugins: [
@@ -33,3 +35,5 @@ export default {
 		},
 	]
 };
+
+export default config;
