@@ -1,5 +1,6 @@
 {
   "root": true,
+  "ignorePatterns": ["dist"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"
@@ -9,5 +10,22 @@
   ],
   "extends": [
     "airbnb-typescript/base"
-  ]
+  ],
+  "rules": {
+    "@typescript-eslint/no-redeclare": "off",
+    "block-scoped-var": "off",
+    "func-names": "off",
+    "import/no-mutable-exports": "off",
+    "no-multi-assign": "off",
+    "no-param-reassign": "off",
+    "no-prototype-builtins": "off",
+    "no-restricted-syntax": "off",
+    "no-underscore-dangle": "off",
+    "no-var": "off",
+    "object-shorthand": ["error", "never"],
+    "prefer-arrow-callback": "off",
+    "prefer-destructuring": "off",
+    "prefer-template": "off",
+    "vars-on-top": "off"
+  }
 }
