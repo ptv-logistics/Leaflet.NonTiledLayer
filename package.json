@@ -32,8 +32,8 @@
     "url": "https://github.com/ptv-logistics/Leaflet.NonTiledLayer/issues"
   },
   "homepage": "https://github.com/ptv-logistics/Leaflet.NonTiledLayer",
-  "dependencies": {
-    "leaflet": "^1.6.0"
+  "peerDependencies": {
+    "leaflet": "^1.7.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^19.0.0",
