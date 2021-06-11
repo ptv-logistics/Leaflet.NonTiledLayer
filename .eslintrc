@@ -17,7 +17,6 @@
     "no-restricted-syntax": "off",
     "no-underscore-dangle": "off",
     "no-var": "off",
-    "object-shorthand": ["error", "never"],
     "prefer-arrow-callback": "off",
     "prefer-destructuring": "off",
     "prefer-template": "off",
