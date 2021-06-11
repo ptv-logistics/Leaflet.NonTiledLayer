@@ -15,7 +15,6 @@
     "@typescript-eslint/no-redeclare": "off",
     "block-scoped-var": "off",
     "import/no-mutable-exports": "off",
-    "no-multi-assign": "off",
     "no-param-reassign": "off",
     "no-prototype-builtins": "off",
     "no-restricted-syntax": "off",

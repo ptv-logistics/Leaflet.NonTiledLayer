@@ -351,7 +351,8 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
     if (this._useCanvas) {
       // set scales for zoom animation
       this._bufferCanvas._scale = this._bufferCanvas._lastScale;
-      this._currentCanvas._scale = this._currentCanvas._lastScale = 1;
+      this._currentCanvas._scale = 1;
+      this._currentCanvas._lastScale = this._currentCanvas._scale;
       this._bufferCanvas._sscale = 1;
 
       this._currentCanvas._bounds = bounds;
@@ -364,7 +365,8 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
     } else {
       // set scales for zoom animation
       this._bufferImage._scale = this._bufferImage._lastScale;
-      this._currentImage._scale = this._currentImage._lastScale = 1;
+      this._currentImage._scale = 1;
+      this._currentImage._lastScale = this._currentImage._scale;
       this._bufferImage._sscale = 1;
 
       this._currentImage._bounds = bounds;
@@ -384,7 +386,8 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
     ) {
       this._div.style.visibility = 'hidden';
       i.src = this.emptyImageUrl;
-      this.key = i.key = '<empty>';
+      i.key = '<empty>';
+      this.key = i.key;
       i.tag = null;
       return;
     }
