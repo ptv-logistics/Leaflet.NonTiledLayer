@@ -59,7 +59,8 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
 
     this.getPane().appendChild(this._div);
 
-    var canvasSupported = !!window.HTMLCanvasElement;
+    var canvasSupported = typeof window !== 'undefined' && !!window.HTMLCanvasElement;
+
     if (typeof this.options.useCanvas === 'undefined') {
       this._useCanvas = canvasSupported;
     } else {
@@ -468,9 +469,11 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
 
 });
 
-L.nonTiledLayer = function () {
-  return new NonTiledLayer();
-};
+if (typeof window !== 'undefined' && typeof (window as any).L !== 'undefined') {
+  (window as any).L.nonTiledLayer = function nonTiledLayer() {
+    return new NonTiledLayer();
+  };
+}
 
 /*
  * L.NonTiledLayer.WMS is used for putting WMS non tiled layers on the map.
