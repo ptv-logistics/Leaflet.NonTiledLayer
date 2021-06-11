@@ -246,24 +246,30 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
   },
 
   _animateImage: function animateImage(image, e) {
-    if (typeof L.DomUtil.setTransform === 'undefined') { // Leaflet 0.7
-      var map = this._map;
-      var scale = image._scale * map.getZoomScale(e.zoom);
-      var nw = image._bounds.getNorthWest();
-      var se = image._bounds.getSouthEast();
+    var map;
+    var scale;
+    var nw;
+    var se;
+    var topLeft;
 
-      var topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
+    if (typeof L.DomUtil.setTransform === 'undefined') { // Leaflet 0.7
+      map = this._map;
+      scale = image._scale * map.getZoomScale(e.zoom);
+      nw = image._bounds.getNorthWest();
+      se = image._bounds.getSouthEast();
+
+      topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
       var size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft);
       var origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
 
       image.style[L.DomUtil.TRANSFORM] = L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
     } else {
-      var map = this._map;
-      var scale = image._scale * image._sscale * map.getZoomScale(e.zoom);
-      var nw = image._bounds.getNorthWest();
-      var se = image._bounds.getSouthEast();
+      map = this._map;
+      scale = image._scale * image._sscale * map.getZoomScale(e.zoom);
+      nw = image._bounds.getNorthWest();
+      se = image._bounds.getSouthEast();
 
-      var topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
+      topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
 
       L.DomUtil.setTransform(image, topLeft, scale);
     }
