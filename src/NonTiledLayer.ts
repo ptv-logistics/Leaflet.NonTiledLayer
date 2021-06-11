@@ -513,8 +513,8 @@ NonTiledLayer.WMS = NonTiledLayer.extend({
     // all keys that are not NonTiledLayer options go to WMS params
     for (var i in options) {
       if (
-        !NonTiledLayer.prototype.options.hasOwnProperty(i)
-        && !(L.Layer && L.Layer.prototype.options.hasOwnProperty(i))
+        !Object.prototype.hasOwnProperty.call(NonTiledLayer.prototype.options, i)
+        && !(L.Layer && Object.prototype.hasOwnProperty.call(L.Layer.prototype.options, i))
       ) {
         wmsParams[i] = options[i];
       }
