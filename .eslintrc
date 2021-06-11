@@ -14,7 +14,6 @@
   "rules": {
     "@typescript-eslint/no-redeclare": "off",
     "block-scoped-var": "off",
-    "func-names": "off",
     "import/no-mutable-exports": "off",
     "no-multi-assign": "off",
     "no-param-reassign": "off",
