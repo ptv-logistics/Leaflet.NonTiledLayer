@@ -12,7 +12,6 @@
     "airbnb-typescript/base"
   ],
   "rules": {
-    "block-scoped-var": "off",
     "import/no-mutable-exports": "off",
     "no-param-reassign": "off",
     "no-prototype-builtins": "off",
