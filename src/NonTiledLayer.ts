@@ -32,6 +32,7 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
   },
 
   onAdd: function onAdd(map) {
+    var canvasSupported;
     this._map = map;
 
     // don't animate on browsers without hardware-accelerated transitions or old Android/Opera
@@ -59,7 +60,7 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
 
     this.getPane().appendChild(this._div);
 
-    var canvasSupported = !!window.HTMLCanvasElement;
+    canvasSupported = !!window.HTMLCanvasElement;
     if (typeof this.options.useCanvas === 'undefined') {
       this._useCanvas = canvasSupported;
     } else {
@@ -251,6 +252,8 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
     var nw;
     var se;
     var topLeft;
+    var size;
+    var origin;
 
     if (typeof L.DomUtil.setTransform === 'undefined') { // Leaflet 0.7
       map = this._map;
@@ -259,8 +262,8 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
       se = image._bounds.getSouthEast();
 
       topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
-      var size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft);
-      var origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
+      size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft);
+      origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
 
       image.style[L.DomUtil.TRANSFORM] = L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
     } else {
@@ -326,14 +329,17 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
     var lWest = this.options.bounds.getWest();
     var lEast = this.options.bounds.getEast();
 
+    var world1;
+    var world2;
+
     // mWest = (mWest + 180) % 360 - 180;
     if (mSouth < lSouth) mSouth = lSouth;
     if (mNorth > lNorth) mNorth = lNorth;
     if (mWest < lWest) mWest = lWest;
     if (mEast > lEast) mEast = lEast;
 
-    var world1 = new L.LatLng(mNorth, mWest);
-    var world2 = new L.LatLng(mSouth, mEast);
+    world1 = new L.LatLng(mNorth, mWest);
+    world2 = new L.LatLng(mSouth, mEast);
 
     return new L.LatLngBounds(world1, world2);
   },
@@ -441,6 +447,8 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
   },
 
   _onImageDone: function onImageDone(e) {
+    var tmp;
+
     if (this._useCanvas) {
       this._renderCanvas(e);
     } else {
@@ -451,7 +459,7 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
         this._addInteraction(this._currentImage.tag);
       }
 
-      var tmp = this._bufferImage;
+      tmp = this._bufferImage;
       this._bufferImage = this._currentImage;
       this._currentImage = tmp;
     }
@@ -463,6 +471,7 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
 
   _renderCanvas: function renderCanvas() {
     var ctx = this._currentCanvas.getContext('2d');
+    var tmp;
 
     ctx.drawImage(this._currentCanvas._image, 0, 0,
       this._currentCanvas.width, this._currentCanvas.height);
@@ -474,7 +483,7 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
       this._addInteraction(this._currentCanvas._image.tag);
     }
 
-    var tmp = this._bufferCanvas;
+    tmp = this._bufferCanvas;
     this._bufferCanvas = this._currentCanvas;
     this._currentCanvas = tmp;
   },
@@ -506,12 +515,15 @@ NonTiledLayer.WMS = NonTiledLayer.extend({
   },
 
   initialize: function initialize(url, options) { // (String, Object)
+    var wmsParams;
+    var i;
+
     this._wmsUrl = url;
 
-    var wmsParams = L.extend({}, this.defaultWmsParams);
+    wmsParams = L.extend({}, this.defaultWmsParams);
 
     // all keys that are not NonTiledLayer options go to WMS params
-    for (var i in options) {
+    for (i in options) {
       if (
         !Object.prototype.hasOwnProperty.call(NonTiledLayer.prototype.options, i)
         && !(L.Layer && Object.prototype.hasOwnProperty.call(L.Layer.prototype.options, i))
@@ -526,10 +538,12 @@ NonTiledLayer.WMS = NonTiledLayer.extend({
   },
 
   onAdd: function onAdd(map) {
+    var projectionKey;
+
     this._crs = this.options.crs || map.options.crs;
     this._wmsVersion = parseFloat(this.wmsParams.version);
 
-    var projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
+    projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
     this.wmsParams[projectionKey] = this._crs.code;
 
     NonTiledLayer.prototype.onAdd.call(this, map);
@@ -537,15 +551,20 @@ NonTiledLayer.WMS = NonTiledLayer.extend({
 
   getImageUrl: function getImageUrl(bounds, width, height) {
     var wmsParams = this.wmsParams;
+    var nw;
+    var se;
+    var url;
+    var bbox;
+
     wmsParams.width = width;
     wmsParams.height = height;
 
-    var nw = this._crs.project(bounds.getNorthWest());
-    var se = this._crs.project(bounds.getSouthEast());
+    nw = this._crs.project(bounds.getNorthWest());
+    se = this._crs.project(bounds.getSouthEast());
 
-    var url = this._wmsUrl;
+    url = this._wmsUrl;
 
-    var bbox = (this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326
+    bbox = (this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326
       ? [se.y, nw.x, nw.y, se.x]
       : [nw.x, se.y, se.x, nw.y]).join(',');
 

@@ -19,7 +19,6 @@
     "no-var": "off",
     "prefer-arrow-callback": "off",
     "prefer-destructuring": "off",
-    "prefer-template": "off",
-    "vars-on-top": "off"
+    "prefer-template": "off"
   }
 }
