@@ -4,7 +4,7 @@ import * as L from 'leaflet';
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
  */
 var NonTiledLayer = (L.Layer || L.Class).extend({
-  includes: L.Evented || L.Mixin.Events,
+  includes: L.Evented || (L as any).Mixin.Events,
 
   emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', // 1px transparent GIF
 
@@ -178,7 +178,7 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
   },
 
   _initCanvas: function initCanvas() {
-    var canvas = L.DomUtil.create('canvas', 'leaflet-image-layer');
+    var canvas = L.DomUtil.create('canvas', 'leaflet-image-layer') as HTMLCanvasElement & { _image: HTMLImageElement };
 
     this._div.appendChild(canvas);
     canvas._image = new Image();
@@ -265,7 +265,7 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
       size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft);
       origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
 
-      image.style[L.DomUtil.TRANSFORM] = L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
+      image.style[L.DomUtil.TRANSFORM] = (L.DomUtil as any).getTranslateString(origin) + ' scale(' + scale + ') ';
     } else {
       map = this._map;
       scale = image._scale * image._sscale * map.getZoomScale(e.zoom);
@@ -490,14 +490,14 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
 
 });
 
-L.nonTiledLayer = function nonTiledLayer() {
+(L as any).nonTiledLayer = function nonTiledLayer() {
   return new NonTiledLayer();
 };
 
 /*
  * L.NonTiledLayer.WMS is used for putting WMS non tiled layers on the map.
  */
-NonTiledLayer.WMS = NonTiledLayer.extend({
+(NonTiledLayer as any).WMS = NonTiledLayer.extend({
 
   defaultWmsParams: {
     service: 'WMS',
@@ -526,7 +526,7 @@ NonTiledLayer.WMS = NonTiledLayer.extend({
     for (i in options) {
       if (
         !Object.prototype.hasOwnProperty.call(NonTiledLayer.prototype.options, i)
-        && !(L.Layer && Object.prototype.hasOwnProperty.call(L.Layer.prototype.options, i))
+        && !(L.Layer && Object.prototype.hasOwnProperty.call((L.Layer.prototype as any).options, i))
       ) {
         wmsParams[i] = options[i];
       }
@@ -582,8 +582,8 @@ NonTiledLayer.WMS = NonTiledLayer.extend({
   },
 });
 
-L.nonTiledLayer.wms = function nonTiledLayer(url, options) {
-  return new NonTiledLayer.WMS(url, options);
+(L as any).nonTiledLayer.wms = function nonTiledLayer(url, options) {
+  return new (NonTiledLayer as any).WMS(url, options);
 };
 
 export default NonTiledLayer;
