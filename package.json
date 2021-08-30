@@ -43,7 +43,7 @@
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
     "eslint": "^7.27.0",
-    "eslint-config-airbnb-typescript": "^12.3.1",
+    "eslint-config-airbnb-typescript": "^14.0.0",
     "eslint-plugin-import": "^2.23.3",
     "rimraf": "^3.0.2",
     "rollup": "^2.48.0",
