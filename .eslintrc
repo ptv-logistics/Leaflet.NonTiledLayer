@@ -9,6 +9,7 @@
     "@typescript-eslint"
   ],
   "extends": [
+    "airbnb-base",
     "airbnb-typescript/base"
   ],
   "rules": {
