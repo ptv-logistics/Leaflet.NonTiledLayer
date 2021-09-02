@@ -3,9 +3,7 @@ import * as L from 'leaflet';
 /*
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
  */
-var NonTiledLayer = (L.Layer || L.Class).extend({
-  includes: L.Evented || (L as any).Mixin.Events,
-
+var NonTiledLayer = L.Layer.extend({
   emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', // 1px transparent GIF
 
   options: {
@@ -35,16 +33,6 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
     var canvasSupported;
     this._map = map;
 
-    // don't animate on browsers without hardware-accelerated transitions or old Android/Opera
-    // Leaflet 0.7
-    if (typeof this._zoomAnimated === 'undefined') {
-      this._zoomAnimated = L.DomUtil.TRANSITION
-        && L.Browser.any3d
-        && !L.Browser.mobileOpera
-        && this._map.options.zoomAnimation;
-    }
-
-    if (L.version < '1.0') this._map.on(this.getEvents(), this);
     if (!this._div) {
       this._div = L.DomUtil.create('div', 'leaflet-image-layer');
       if (this.options.pointerEvents) {
@@ -78,21 +66,7 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
     this._update();
   },
 
-  getPane: function getPane() {
-    if (L.Layer) {
-      return L.Layer.prototype.getPane.call(this);
-    }
-    if (this.options.pane) {
-      this._pane = this.options.pane;
-    } else {
-      this._pane = this._map.getPanes().overlayPane;
-    }
-    return this._pane;
-  },
-
   onRemove: function onRemove() {
-    if (L.version < '1.0') this._map.off(this.getEvents(), this);
-
     this.getPane().removeChild(this._div);
 
     if (this._useCanvas) {
@@ -128,10 +102,7 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
       events.zoomanim = this._animateZoom;
     }
 
-    // fix: no zoomanim for pinch with Leaflet 1.0!
-    if (L.version >= '1.0') {
-      events.zoom = this._setZoom;
-    }
+    events.zoom = this._setZoom;
 
     return events;
   },
@@ -247,35 +218,12 @@ var NonTiledLayer = (L.Layer || L.Class).extend({
   },
 
   _animateImage: function animateImage(image, e) {
-    var map;
-    var scale;
-    var nw;
-    var se;
-    var topLeft;
-    var size;
-    var origin;
+    var map = this._map;
+    var scale = image._scale * image._sscale * map.getZoomScale(e.zoom);
+    var nw = image._bounds.getNorthWest();
+    var topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
 
-    if (typeof L.DomUtil.setTransform === 'undefined') { // Leaflet 0.7
-      map = this._map;
-      scale = image._scale * map.getZoomScale(e.zoom);
-      nw = image._bounds.getNorthWest();
-      se = image._bounds.getSouthEast();
-
-      topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
-      size = map._latLngToNewLayerPoint(se, e.zoom, e.center)._subtract(topLeft);
-      origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
-
-      image.style[L.DomUtil.TRANSFORM] = (L.DomUtil as any).getTranslateString(origin) + ' scale(' + scale + ') ';
-    } else {
-      map = this._map;
-      scale = image._scale * image._sscale * map.getZoomScale(e.zoom);
-      nw = image._bounds.getNorthWest();
-      se = image._bounds.getSouthEast();
-
-      topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
-
-      L.DomUtil.setTransform(image, topLeft, scale);
-    }
+    L.DomUtil.setTransform(image, topLeft, scale);
 
     image._lastScale = scale;
   },
