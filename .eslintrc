@@ -17,7 +17,6 @@
     "no-param-reassign": "off",
     "no-restricted-syntax": "off",
     "no-underscore-dangle": "off",
-    "no-var": "off",
     "prefer-arrow-callback": "off",
     "prefer-destructuring": "off",
     "prefer-template": "off"

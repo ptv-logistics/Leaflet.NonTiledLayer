@@ -3,7 +3,7 @@ import * as L from 'leaflet';
 /*
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
  */
-var NonTiledLayer = L.Layer.extend({
+const NonTiledLayer = L.Layer.extend({
   emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', // 1px transparent GIF
 
   options: {
@@ -30,7 +30,6 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   onAdd: function onAdd(map) {
-    var canvasSupported;
     this._map = map;
 
     if (!this._div) {
@@ -48,7 +47,8 @@ var NonTiledLayer = L.Layer.extend({
 
     this.getPane().appendChild(this._div);
 
-    canvasSupported = !!window.HTMLCanvasElement;
+    const canvasSupported = !!window.HTMLCanvasElement;
+
     if (typeof this.options.useCanvas === 'undefined') {
       this._useCanvas = canvasSupported;
     } else {
@@ -94,7 +94,7 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   getEvents: function getEvents() {
-    var events: any = {
+    const events: any = {
       moveend: this._update,
     };
 
@@ -149,7 +149,7 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   _initCanvas: function initCanvas() {
-    var canvas = L.DomUtil.create('canvas', 'leaflet-image-layer') as HTMLCanvasElement & { _image: HTMLImageElement };
+    const canvas = L.DomUtil.create('canvas', 'leaflet-image-layer') as HTMLCanvasElement & { _image: HTMLImageElement };
 
     this._div.appendChild(canvas);
     canvas._image = new Image();
@@ -174,7 +174,7 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   _initImage: function initImage() {
-    var image = L.DomUtil.create('img', 'leaflet-image-layer');
+    const image = L.DomUtil.create('img', 'leaflet-image-layer');
 
     if (this.options.crossOrigin) {
       image.crossOrigin = this.options.crossOrigin;
@@ -218,10 +218,10 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   _animateImage: function animateImage(image, e) {
-    var map = this._map;
-    var scale = image._scale * image._sscale * map.getZoomScale(e.zoom);
-    var nw = image._bounds.getNorthWest();
-    var topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
+    const map = this._map;
+    const scale = image._scale * image._sscale * map.getZoomScale(e.zoom);
+    const nw = image._bounds.getNorthWest();
+    const topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
 
     L.DomUtil.setTransform(image, topLeft, scale);
 
@@ -229,25 +229,25 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   _resetImageScale: function resetImageScale(image) {
-    var bounds = new L.Bounds(
+    const bounds = new L.Bounds(
       this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
       this._map.latLngToLayerPoint(image._bounds.getSouthEast()),
     );
-    var orgSize = image._orgBounds.getSize().y;
-    var scaledSize = bounds.getSize().y;
+    const orgSize = image._orgBounds.getSize().y;
+    const scaledSize = bounds.getSize().y;
 
-    var scale = scaledSize / orgSize;
+    const scale = scaledSize / orgSize;
     image._sscale = scale;
 
     L.DomUtil.setTransform(image, bounds.min, scale);
   },
 
   _resetImage: function resetImage(image) {
-    var bounds = new L.Bounds(
+    const bounds = new L.Bounds(
       this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
       this._map.latLngToLayerPoint(image._bounds.getSouthEast()),
     );
-    var size = bounds.getSize();
+    const size = bounds.getSize();
 
     L.DomUtil.setPosition(image, bounds.min);
 
@@ -264,21 +264,18 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   _getClippedBounds: function getClippedBounds() {
-    var wgsBounds = this._map.getBounds();
+    const wgsBounds = this._map.getBounds();
 
     // truncate bounds to valid wgs bounds
-    var mSouth = wgsBounds.getSouth();
-    var mNorth = wgsBounds.getNorth();
-    var mWest = wgsBounds.getWest();
-    var mEast = wgsBounds.getEast();
+    let mSouth = wgsBounds.getSouth();
+    let mNorth = wgsBounds.getNorth();
+    let mWest = wgsBounds.getWest();
+    let mEast = wgsBounds.getEast();
 
-    var lSouth = this.options.bounds.getSouth();
-    var lNorth = this.options.bounds.getNorth();
-    var lWest = this.options.bounds.getWest();
-    var lEast = this.options.bounds.getEast();
-
-    var world1;
-    var world2;
+    const lSouth = this.options.bounds.getSouth();
+    const lNorth = this.options.bounds.getNorth();
+    const lWest = this.options.bounds.getWest();
+    const lEast = this.options.bounds.getEast();
 
     // mWest = (mWest + 180) % 360 - 180;
     if (mSouth < lSouth) mSouth = lSouth;
@@ -286,8 +283,8 @@ var NonTiledLayer = L.Layer.extend({
     if (mWest < lWest) mWest = lWest;
     if (mEast > lEast) mEast = lEast;
 
-    world1 = new L.LatLng(mNorth, mWest);
-    world2 = new L.LatLng(mSouth, mEast);
+    const world1 = new L.LatLng(mNorth, mWest);
+    const world2 = new L.LatLng(mSouth, mEast);
 
     return new L.LatLngBounds(world1, world2);
   },
@@ -297,17 +294,17 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   _update: function update() {
-    var bounds = this._getClippedBounds();
+    const bounds = this._getClippedBounds();
 
     // re-project to corresponding pixel bounds
-    var pix1 = this._map.latLngToContainerPoint(bounds.getNorthWest());
-    var pix2 = this._map.latLngToContainerPoint(bounds.getSouthEast());
+    const pix1 = this._map.latLngToContainerPoint(bounds.getNorthWest());
+    const pix2 = this._map.latLngToContainerPoint(bounds.getSouthEast());
 
     // get pixel size
-    var width = pix2.x - pix1.x;
-    var height = pix2.y - pix1.y;
+    let width = pix2.x - pix1.x;
+    let height = pix2.y - pix1.y;
 
-    var i;
+    let i;
     if (this._useCanvas) {
       // set scales for zoom animation
       this._bufferCanvas._scale = this._bufferCanvas._lastScale;
@@ -395,7 +392,7 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   _onImageDone: function onImageDone(e) {
-    var tmp;
+    let tmp;
 
     if (this._useCanvas) {
       this._renderCanvas(e);
@@ -418,8 +415,7 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   _renderCanvas: function renderCanvas() {
-    var ctx = this._currentCanvas.getContext('2d');
-    var tmp;
+    const ctx = this._currentCanvas.getContext('2d');
 
     ctx.drawImage(this._currentCanvas._image, 0, 0,
       this._currentCanvas.width, this._currentCanvas.height);
@@ -431,7 +427,7 @@ var NonTiledLayer = L.Layer.extend({
       this._addInteraction(this._currentCanvas._image.tag);
     }
 
-    tmp = this._bufferCanvas;
+    const tmp = this._bufferCanvas;
     this._bufferCanvas = this._currentCanvas;
     this._currentCanvas = tmp;
   },
@@ -463,12 +459,11 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   initialize: function initialize(url, options) { // (String, Object)
-    var wmsParams;
-    var i;
+    let i;
 
     this._wmsUrl = url;
 
-    wmsParams = L.extend({}, this.defaultWmsParams);
+    const wmsParams = L.extend({}, this.defaultWmsParams);
 
     // all keys that are not NonTiledLayer options go to WMS params
     for (i in options) {
@@ -486,33 +481,25 @@ var NonTiledLayer = L.Layer.extend({
   },
 
   onAdd: function onAdd(map) {
-    var projectionKey;
-
     this._crs = this.options.crs || map.options.crs;
     this._wmsVersion = parseFloat(this.wmsParams.version);
 
-    projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
+    const projectionKey = this._wmsVersion >= 1.3 ? 'crs' : 'srs';
     this.wmsParams[projectionKey] = this._crs.code;
 
     NonTiledLayer.prototype.onAdd.call(this, map);
   },
 
   getImageUrl: function getImageUrl(bounds, width, height) {
-    var wmsParams = this.wmsParams;
-    var nw;
-    var se;
-    var url;
-    var bbox;
+    const wmsParams = this.wmsParams;
 
     wmsParams.width = width;
     wmsParams.height = height;
 
-    nw = this._crs.project(bounds.getNorthWest());
-    se = this._crs.project(bounds.getSouthEast());
-
-    url = this._wmsUrl;
-
-    bbox = (this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326
+    const nw = this._crs.project(bounds.getNorthWest());
+    const se = this._crs.project(bounds.getSouthEast());
+    const url = this._wmsUrl;
+    const bbox = (this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326
       ? [se.y, nw.x, nw.y, se.x]
       : [nw.x, se.y, se.x, nw.y]).join(',');
 
