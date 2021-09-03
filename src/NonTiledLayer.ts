@@ -1,5 +1,18 @@
-import type { LayerOptions, LatLngBounds } from 'leaflet';
+import type { LayerOptions } from 'leaflet';
 import * as L from 'leaflet';
+import {
+  bind,
+  Bounds,
+  Browser,
+  CRS,
+  DomUtil,
+  extend,
+  LatLng,
+  LatLngBounds,
+  Layer,
+  setOptions,
+  Util,
+} from 'leaflet';
 
 export interface NonTiledLayerOptions extends LayerOptions {
   /** The opacity value between 0.0 and 1.0. Default: `1.0` */
@@ -38,7 +51,7 @@ export interface NonTiledLayerOptions extends LayerOptions {
 /*
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
  */
-const NonTiledLayer = L.Layer.extend({
+const NonTiledLayer = Layer.extend({
   emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', // 1px transparent GIF
 
   options: {
@@ -49,7 +62,7 @@ const NonTiledLayer = L.Layer.extend({
     maxZoom: 18,
     pointerEvents: undefined,
     errorImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', // 1px transparent GIF
-    bounds: L.latLngBounds([-85.05, -180], [85.05, 180]),
+    bounds: new LatLngBounds([-85.05, -180], [85.05, 180]),
     useCanvas: undefined,
     detectRetina: false,
   },
@@ -61,14 +74,14 @@ const NonTiledLayer = L.Layer.extend({
   // getImageUrlAsync: function (bounds, width, height, f) {},
 
   initialize: function initialize(options: NonTiledLayerOptions) {
-    L.setOptions(this, options);
+    setOptions(this, options);
   },
 
   onAdd: function onAdd(map) {
     this._map = map;
 
     if (!this._div) {
-      this._div = L.DomUtil.create('div', 'leaflet-image-layer');
+      this._div = DomUtil.create('div', 'leaflet-image-layer');
       if (this.options.pointerEvents) {
         this._div.style['pointer-events'] = this.options.pointerEvents;
       }
@@ -149,7 +162,7 @@ const NonTiledLayer = L.Layer.extend({
   setOpacity: function setOpacity(opacity) {
     this.options.opacity = opacity;
     if (this._div) {
-      L.DomUtil.setOpacity(this._div, this.options.opacity);
+      DomUtil.setOpacity(this._div, this.options.opacity);
     }
     return this;
   },
@@ -184,7 +197,7 @@ const NonTiledLayer = L.Layer.extend({
   },
 
   _initCanvas: function initCanvas() {
-    const canvas = L.DomUtil.create('canvas', 'leaflet-image-layer') as HTMLCanvasElement & { _image: HTMLImageElement };
+    const canvas = DomUtil.create('canvas', 'leaflet-image-layer') as HTMLCanvasElement & { _image: HTMLImageElement };
 
     this._div.appendChild(canvas);
     canvas._image = new Image();
@@ -194,22 +207,22 @@ const NonTiledLayer = L.Layer.extend({
       canvas._image.crossOrigin = this.options.crossOrigin;
     }
 
-    if (this._map.options.zoomAnimation && L.Browser.any3d) {
-      L.DomUtil.addClass(canvas, 'leaflet-zoom-animated');
+    if (this._map.options.zoomAnimation && Browser.any3d) {
+      DomUtil.addClass(canvas, 'leaflet-zoom-animated');
     } else {
-      L.DomUtil.addClass(canvas, 'leaflet-zoom-hide');
+      DomUtil.addClass(canvas, 'leaflet-zoom-hide');
     }
 
-    L.extend(canvas._image, {
-      onload: L.bind(this._onImageLoad, this),
-      onerror: L.bind(this._onImageError, this),
+    extend(canvas._image, {
+      onload: bind(this._onImageLoad, this),
+      onerror: bind(this._onImageError, this),
     });
 
     return canvas;
   },
 
   _initImage: function initImage() {
-    const image = L.DomUtil.create('img', 'leaflet-image-layer');
+    const image = DomUtil.create('img', 'leaflet-image-layer');
 
     if (this.options.crossOrigin) {
       image.crossOrigin = this.options.crossOrigin;
@@ -217,19 +230,19 @@ const NonTiledLayer = L.Layer.extend({
 
     this._div.appendChild(image);
 
-    if (this._map.options.zoomAnimation && L.Browser.any3d) {
-      L.DomUtil.addClass(image, 'leaflet-zoom-animated');
+    if (this._map.options.zoomAnimation && Browser.any3d) {
+      DomUtil.addClass(image, 'leaflet-zoom-animated');
     } else {
-      L.DomUtil.addClass(image, 'leaflet-zoom-hide');
+      DomUtil.addClass(image, 'leaflet-zoom-hide');
     }
 
     // TODO createImage util method to remove duplication
-    L.extend(image, {
+    extend(image, {
       galleryimg: 'no',
-      onselectstart: L.Util.falseFn,
-      onmousemove: L.Util.falseFn,
-      onload: L.bind(this._onImageLoad, this),
-      onerror: L.bind(this._onImageError, this),
+      onselectstart: Util.falseFn,
+      onmousemove: Util.falseFn,
+      onload: bind(this._onImageLoad, this),
+      onerror: bind(this._onImageError, this),
     });
 
     return image;
@@ -258,13 +271,13 @@ const NonTiledLayer = L.Layer.extend({
     const nw = image._bounds.getNorthWest();
     const topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
 
-    L.DomUtil.setTransform(image, topLeft, scale);
+    DomUtil.setTransform(image, topLeft, scale);
 
     image._lastScale = scale;
   },
 
   _resetImageScale: function resetImageScale(image) {
-    const bounds = new L.Bounds(
+    const bounds = new Bounds(
       this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
       this._map.latLngToLayerPoint(image._bounds.getSouthEast()),
     );
@@ -274,17 +287,17 @@ const NonTiledLayer = L.Layer.extend({
     const scale = scaledSize / orgSize;
     image._sscale = scale;
 
-    L.DomUtil.setTransform(image, bounds.min, scale);
+    DomUtil.setTransform(image, bounds.min, scale);
   },
 
   _resetImage: function resetImage(image) {
-    const bounds = new L.Bounds(
+    const bounds = new Bounds(
       this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
       this._map.latLngToLayerPoint(image._bounds.getSouthEast()),
     );
     const size = bounds.getSize();
 
-    L.DomUtil.setPosition(image, bounds.min);
+    DomUtil.setPosition(image, bounds.min);
 
     image._orgBounds = bounds;
     image._sscale = 1;
@@ -318,14 +331,14 @@ const NonTiledLayer = L.Layer.extend({
     if (mWest < lWest) mWest = lWest;
     if (mEast > lEast) mEast = lEast;
 
-    const world1 = new L.LatLng(mNorth, mWest);
-    const world2 = new L.LatLng(mSouth, mEast);
+    const world1 = new LatLng(mNorth, mWest);
+    const world2 = new LatLng(mSouth, mEast);
 
-    return new L.LatLngBounds(world1, world2);
+    return new LatLngBounds(world1, world2);
   },
 
   _getImageScale: function getImageScale() {
-    return this.options.detectRetina && L.Browser.retina ? 2 : 1;
+    return this.options.detectRetina && Browser.retina ? 2 : 1;
   },
 
   _update: function update() {
@@ -353,7 +366,7 @@ const NonTiledLayer = L.Layer.extend({
 
       i = this._currentCanvas._image;
 
-      L.DomUtil.setOpacity(i, 0);
+      DomUtil.setOpacity(i, 0);
     } else {
       // set scales for zoom animation
       this._bufferImage._scale = this._bufferImage._lastScale;
@@ -367,7 +380,7 @@ const NonTiledLayer = L.Layer.extend({
 
       i = this._currentImage;
 
-      L.DomUtil.setOpacity(i, 0);
+      DomUtil.setOpacity(i, 0);
     }
 
     if (
@@ -407,7 +420,7 @@ const NonTiledLayer = L.Layer.extend({
 
   _onImageError: function onImageError(e) {
     this.fire('error', e);
-    L.DomUtil.addClass(e.target, 'invalid');
+    DomUtil.addClass(e.target, 'invalid');
     // prevent error loop if error image is not valid
     if (e.target.src !== this.options.errorImageUrl) {
       e.target.src = this.options.errorImageUrl;
@@ -416,7 +429,7 @@ const NonTiledLayer = L.Layer.extend({
 
   _onImageLoad: function onImageLoad(e) {
     if (e.target.src !== this.options.errorImageUrl) {
-      L.DomUtil.removeClass(e.target, 'invalid');
+      DomUtil.removeClass(e.target, 'invalid');
       if (!e.target.key || e.target.key !== this.key) { // obsolete / outdated image
         return;
       }
@@ -432,8 +445,8 @@ const NonTiledLayer = L.Layer.extend({
     if (this._useCanvas) {
       this._renderCanvas(e);
     } else {
-      L.DomUtil.setOpacity(this._currentImage, 1);
-      L.DomUtil.setOpacity(this._bufferImage, 0);
+      DomUtil.setOpacity(this._currentImage, 1);
+      DomUtil.setOpacity(this._bufferImage, 0);
 
       if (this._addInteraction && this._currentImage.tag) {
         this._addInteraction(this._currentImage.tag);
@@ -455,8 +468,8 @@ const NonTiledLayer = L.Layer.extend({
     ctx.drawImage(this._currentCanvas._image, 0, 0,
       this._currentCanvas.width, this._currentCanvas.height);
 
-    L.DomUtil.setOpacity(this._currentCanvas, 1);
-    L.DomUtil.setOpacity(this._bufferCanvas, 0);
+    DomUtil.setOpacity(this._currentCanvas, 1);
+    DomUtil.setOpacity(this._bufferCanvas, 0);
 
     if (this._addInteraction && this._currentCanvas._image.tag) {
       this._addInteraction(this._currentCanvas._image.tag);
@@ -498,13 +511,13 @@ const NonTiledLayer = L.Layer.extend({
 
     this._wmsUrl = url;
 
-    const wmsParams = L.extend({}, this.defaultWmsParams);
+    const wmsParams = extend({}, this.defaultWmsParams);
 
     // all keys that are not NonTiledLayer options go to WMS params
     for (i in options) {
       if (
         !Object.prototype.hasOwnProperty.call(NonTiledLayer.prototype.options, i)
-        && !(L.Layer && Object.prototype.hasOwnProperty.call((L.Layer.prototype as any).options, i))
+        && !(Layer && Object.prototype.hasOwnProperty.call((Layer.prototype as any).options, i))
       ) {
         wmsParams[i] = options[i];
       }
@@ -512,7 +525,7 @@ const NonTiledLayer = L.Layer.extend({
 
     this.wmsParams = wmsParams;
 
-    L.setOptions(this, options);
+    setOptions(this, options);
   },
 
   onAdd: function onAdd(map) {
@@ -534,15 +547,15 @@ const NonTiledLayer = L.Layer.extend({
     const nw = this._crs.project(bounds.getNorthWest());
     const se = this._crs.project(bounds.getSouthEast());
     const url = this._wmsUrl;
-    const bbox = (this._wmsVersion >= 1.3 && this._crs === L.CRS.EPSG4326
+    const bbox = (this._wmsVersion >= 1.3 && this._crs === CRS.EPSG4326
       ? [se.y, nw.x, nw.y, se.x]
       : [nw.x, se.y, se.x, nw.y]).join(',');
 
-    return url + L.Util.getParamString(this.wmsParams, url, this.options.uppercase) + (this.options.uppercase ? '&BBOX=' : '&bbox=') + bbox;
+    return url + Util.getParamString(this.wmsParams, url, this.options.uppercase) + (this.options.uppercase ? '&BBOX=' : '&bbox=') + bbox;
   },
 
   setParams: function setParams(params, noRedraw) {
-    L.extend(this.wmsParams, params);
+    extend(this.wmsParams, params);
 
     if (!noRedraw) {
       this.redraw();
