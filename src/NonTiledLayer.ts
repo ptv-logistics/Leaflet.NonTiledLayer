@@ -1,4 +1,39 @@
+import type { LayerOptions, LatLngBounds } from 'leaflet';
 import * as L from 'leaflet';
+
+export interface NonTiledLayerOptions extends LayerOptions {
+  /** The opacity value between 0.0 and 1.0. Default: `1.0` */
+  opacity?: number;
+  /** The minimum zoom level for which the overlay is requested. Default: `0` */
+  minZoom?: number;
+  /** The maximum zoom level for which the overlay is requested. Default: `18` */
+  maxZoom?: number;
+  /** The geographic bounds of the layer. Default: `LatLngBounds([-85.05, -180], [85.05, 180])` */
+  bounds?: LatLngBounds
+  /** z-index of the overlay. Default: `undefined` */
+  zIndex?: number
+  /** The pointer-events style for the overlay. Default: `undefined` */
+  pointerEvents?: string;
+  /**
+   * The url of the image displayed when the layer fails to load (invalid request or server error).
+   * Default: 1px transparent gif
+   */
+  errorImageUrl?: string;
+  /**
+   * Use the canvas to render the images, fixes flickering issues with Firefox, doesn't work on IE8.
+   * Setting it to `undefined` will use canvas, if available. Default: `undefined`
+   */
+  useCanvas?: boolean;
+  /**
+   * Doubles the actual image size requested, if the browser is in retina mode. Default: `false`
+   */
+  detectRetina?: boolean;
+  /**
+   * Enables cross origin capabilities. Valid values are 'anonymous' and 'use-credentials'.
+   * Default: `undefined`
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials';
+}
 
 /*
  * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
@@ -12,7 +47,7 @@ const NonTiledLayer = L.Layer.extend({
     zIndex: undefined,
     minZoom: 0,
     maxZoom: 18,
-    pointerEvents: null,
+    pointerEvents: undefined,
     errorImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', // 1px transparent GIF
     bounds: L.latLngBounds([-85.05, -180], [85.05, 180]),
     useCanvas: undefined,
@@ -25,7 +60,7 @@ const NonTiledLayer = L.Layer.extend({
   // getImageUrl: function (bounds, width, height) {},
   // getImageUrlAsync: function (bounds, width, height, f) {},
 
-  initialize: function initialize(options) {
+  initialize: function initialize(options: NonTiledLayerOptions) {
     L.setOptions(this, options);
   },
 
