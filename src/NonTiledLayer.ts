@@ -1,5 +1,4 @@
 import type { LayerOptions } from 'leaflet';
-import * as L from 'leaflet';
 import {
   bind,
   Bounds,
@@ -482,10 +481,6 @@ const NonTiledLayer = Layer.extend({
 
 });
 
-(L as any).nonTiledLayer = function nonTiledLayer() {
-  return new NonTiledLayer();
-};
-
 /*
  * L.NonTiledLayer.WMS is used for putting WMS non tiled layers on the map.
  */
@@ -564,9 +559,5 @@ const NonTiledLayer = Layer.extend({
     return this;
   },
 });
-
-(L as any).nonTiledLayer.wms = function nonTiledLayer(url, options) {
-  return new (NonTiledLayer as any).WMS(url, options);
-};
 
 export default NonTiledLayer;

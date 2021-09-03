@@ -7,7 +7,6 @@ import { terser } from 'rollup-plugin-terser';
 const outputConfig = {
   name: 'L.NonTiledLayer',
   format: 'umd',
-  interop: false,
   globals: {
     leaflet: 'L',
   },

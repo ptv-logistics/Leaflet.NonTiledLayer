@@ -67,7 +67,7 @@
         }).addTo(map);
 
         // add (non-tiled) label layer. Insert at tile pane
-        var labels = L.nonTiledLayer.wms(xMapWmsUrl, {
+        var labels = new L.NonTiledLayer.WMS(xMapWmsUrl, {
             maxZoom: 19,
             minZoom: 0,
             opacity: 1.0,
@@ -80,7 +80,7 @@
         }).addTo(map);
 
         // add pois. Default - insert at overlayPane
-        var poi = L.nonTiledLayer.wms(xMapWmsUrl, {
+        var poi = new L.NonTiledLayer.WMS(xMapWmsUrl, {
             maxZoom: 19,
             minZoom: 16,
             zIndex: 5, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
@@ -92,7 +92,7 @@
         }).addTo(map);
 
         // add contours, on tile pane
-        var contour = L.nonTiledLayer.wms('https://ows.terrestris.de/osm/service', {
+        var contour = new L.NonTiledLayer.WMS('https://ows.terrestris.de/osm/service', {
             maxZoom: 19,
             minZoom: 4,
             zIndex: 2, // setting a zIndex enforces the layer ordering after adding/removing multiple layers
@@ -106,7 +106,7 @@
         }).addTo(map); 
 
         // insert airmass layer, at tile pane between background and labels
-        var airmass = L.nonTiledLayer.wms("https://eumetview.eumetsat.int/geoserv/wms", {
+        var airmass = new L.NonTiledLayer.WMS("https://eumetview.eumetsat.int/geoserv/wms", {
             maxZoom: 8,
             minZoom: 0,
             layers: 'meteosat:msg_eview',
