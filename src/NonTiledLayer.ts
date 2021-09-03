@@ -258,8 +258,8 @@ const NonTiledLayer = L.Layer.extend({
       image.width = size.x;
       image.height = size.y;
     } else {
-      image.style.width = size.x + 'px';
-      image.style.height = size.y + 'px';
+      image.style.width = `${size.x}px`;
+      image.style.height = `${size.y}px`;
     }
   },
 
@@ -356,7 +356,7 @@ const NonTiledLayer = L.Layer.extend({
     height *= this._getImageScale();
 
     // create a key identifying the current request
-    this.key = '' + bounds.getNorthWest() + ', ' + bounds.getSouthEast() + ', ' + width + ', ' + height;
+    this.key = [bounds.getNorthWest(), bounds.getSouthEast(), width, height].join(', ');
 
     if (this.getImageUrl) {
       i.src = this.getImageUrl(bounds, width, height);
