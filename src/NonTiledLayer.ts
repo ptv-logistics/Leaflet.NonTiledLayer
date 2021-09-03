@@ -362,7 +362,7 @@ const NonTiledLayer = L.Layer.extend({
       i.src = this.getImageUrl(bounds, width, height);
       i.key = this.key;
     } else {
-      this.getImageUrlAsync(bounds, width, height, this.key, function callback(key, url, tag) {
+      this.getImageUrlAsync(bounds, width, height, this.key, (key, url, tag) => {
         i.key = key;
         i.src = url;
         i.tag = tag;

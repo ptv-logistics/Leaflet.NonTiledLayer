@@ -16,7 +16,6 @@
     "import/no-mutable-exports": "off",
     "no-param-reassign": "off",
     "no-restricted-syntax": "off",
-    "no-underscore-dangle": "off",
-    "prefer-arrow-callback": "off"
+    "no-underscore-dangle": "off"
   }
 }
