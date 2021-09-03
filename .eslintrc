@@ -18,7 +18,6 @@
     "no-restricted-syntax": "off",
     "no-underscore-dangle": "off",
     "prefer-arrow-callback": "off",
-    "prefer-destructuring": "off",
-    "prefer-template": "off"
+    "prefer-destructuring": "off"
   }
 }
