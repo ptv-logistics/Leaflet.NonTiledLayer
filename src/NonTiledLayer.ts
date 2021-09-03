@@ -491,7 +491,7 @@ const NonTiledLayer = L.Layer.extend({
   },
 
   getImageUrl: function getImageUrl(bounds, width, height) {
-    const wmsParams = this.wmsParams;
+    const { wmsParams } = this;
 
     wmsParams.width = width;
     wmsParams.height = height;
