@@ -9,6 +9,7 @@ import {
   LatLng,
   LatLngBounds,
   Layer,
+  Map,
   setOptions,
   Util,
 } from 'leaflet';
@@ -47,13 +48,27 @@ export interface NonTiledLayerOptions extends LayerOptions {
   crossOrigin?: 'anonymous' | 'use-credentials';
 }
 
-/*
- * L.NonTiledLayer is an addon for leaflet which renders dynamic image overlays
- */
-const NonTiledLayer = Layer.extend({
-  emptyImageUrl: 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==', // 1px transparent GIF
+type ExtendedFields = {
+  _image: HTMLImageElement,
+  _bounds: LatLngBounds
+  _orgBounds: Bounds
+  _sscale: number
+  _scale: number
+  _lastScale: number
+};
 
-  options: {
+type ExtendedCanvasElement = HTMLCanvasElement & ExtendedFields;
+type ExtendedImageElement = HTMLImageElement & ExtendedFields;
+
+export type AsyncImageUrlCallback = (key, url, tag) => void;
+
+/*
+ * NonTiledLayer is an addon for leaflet which renders dynamic image overlays
+ */
+export default abstract class NonTiledLayer extends Layer {
+  emptyImageUrl = 'data:image/gif;base64,R0lGODlhAQABAHAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw=='; // 1px transparent GIF
+
+  options: NonTiledLayerOptions = {
     attribution: '',
     opacity: 1.0,
     zIndex: undefined,
@@ -64,19 +79,35 @@ const NonTiledLayer = Layer.extend({
     bounds: new LatLngBounds([-85.05, -180], [85.05, 180]),
     useCanvas: undefined,
     detectRetina: false,
-  },
+  };
 
-  key: '',
+  key = '';
+
+  private _div: HTMLDivElement;
+
+  private _useCanvas: boolean;
+
+  private _bufferCanvas: ExtendedCanvasElement;
+
+  private _currentCanvas: ExtendedCanvasElement;
+
+  private _bufferImage: ExtendedImageElement;
+
+  private _currentImage: ExtendedImageElement;
+
+  private _zoomAnimated: boolean;
+
+  private _ctx: CanvasRenderingContext2D;
 
   // override this method in the inherited class
-  // getImageUrl: function (bounds, width, height) {},
-  // getImageUrlAsync: function (bounds, width, height, f) {},
+  abstract getImageUrl(bounds, width, height): void;
+  abstract getImageUrlAsync(bounds, width, height, key, f: AsyncImageUrlCallback): void;
 
-  initialize: function initialize(options: NonTiledLayerOptions) {
+  initialize(options: NonTiledLayerOptions) {
     setOptions(this, options);
-  },
+  }
 
-  onAdd: function onAdd(map) {
+  onAdd(map: Map) {
     this._map = map;
 
     if (!this._div) {
@@ -85,10 +116,10 @@ const NonTiledLayer = Layer.extend({
         this._div.style['pointer-events'] = this.options.pointerEvents;
       }
       if (typeof this.options.zIndex !== 'undefined') {
-        this._div.style.zIndex = this.options.zIndex;
+        this._div.style.zIndex = this.options.zIndex.toString();
       }
       if (typeof this.options.opacity !== 'undefined') {
-        this._div.style.opacity = this.options.opacity;
+        this._div.style.opacity = this.options.opacity.toString();
       }
     }
 
@@ -111,9 +142,11 @@ const NonTiledLayer = Layer.extend({
     }
 
     this._update();
-  },
 
-  onRemove: function onRemove() {
+    return this;
+  }
+
+  onRemove() {
     this.getPane().removeChild(this._div);
 
     if (this._useCanvas) {
@@ -123,28 +156,31 @@ const NonTiledLayer = Layer.extend({
       this._div.removeChild(this._bufferImage);
       this._div.removeChild(this._currentImage);
     }
-  },
 
-  addTo: function addTo(map) {
+    return this;
+  }
+
+  addTo(map: Map) {
     map.addLayer(this);
     return this;
-  },
+  }
 
-  _setZoom: function setZoom() {
+  _setZoom() {
     if (this._useCanvas) {
-      if (this._currentCanvas._bounds) this._resetImageScale(this._currentCanvas, true);
+      if (this._currentCanvas._bounds) this._resetImageScale(this._currentCanvas);
       if (this._bufferCanvas._bounds) this._resetImageScale(this._bufferCanvas);
     } else {
-      if (this._currentImage._bounds) this._resetImageScale(this._currentImage, true);
+      if (this._currentImage._bounds) this._resetImageScale(this._currentImage);
       if (this._bufferImage._bounds) this._resetImageScale(this._bufferImage);
     }
-  },
+  }
 
-  getEvents: function getEvents() {
+  getEvents() {
     const events: any = {
       moveend: this._update,
     };
 
+    // TODO: Looks like this code is dead.
     if (this._zoomAnimated) {
       events.zoomanim = this._animateZoom;
     }
@@ -152,21 +188,21 @@ const NonTiledLayer = Layer.extend({
     events.zoom = this._setZoom;
 
     return events;
-  },
+  }
 
-  getElement: function getElement() {
+  getElement() {
     return this._div;
-  },
+  }
 
-  setOpacity: function setOpacity(opacity) {
+  setOpacity(opacity) {
     this.options.opacity = opacity;
     if (this._div) {
       DomUtil.setOpacity(this._div, this.options.opacity);
     }
     return this;
-  },
+  }
 
-  setZIndex: function setZIndex(zIndex) {
+  setZIndex(zIndex) {
     if (zIndex) {
       this.options.zIndex = zIndex;
       if (this._div) {
@@ -174,29 +210,29 @@ const NonTiledLayer = Layer.extend({
       }
     }
     return this;
-  },
+  }
 
   // TODO remove bringToFront/bringToBack duplication from TileLayer/Path
-  bringToFront: function bringToFront() {
+  bringToFront() {
     if (this._div) {
       this.getPane().appendChild(this._div);
     }
     return this;
-  },
+  }
 
-  bringToBack: function bringToBack() {
+  bringToBack() {
     if (this._div) {
       this.getPane().insertBefore(this._div, this.getPane().firstChild);
     }
     return this;
-  },
+  }
 
-  getAttribution: function getAttribution() {
+  getAttribution() {
     return this.options.attribution;
-  },
+  }
 
-  _initCanvas: function initCanvas() {
-    const canvas = DomUtil.create('canvas', 'leaflet-image-layer') as HTMLCanvasElement & { _image: HTMLImageElement };
+  _initCanvas() {
+    const canvas = DomUtil.create('canvas', 'leaflet-image-layer') as ExtendedCanvasElement;
 
     this._div.appendChild(canvas);
     canvas._image = new Image();
@@ -218,10 +254,10 @@ const NonTiledLayer = Layer.extend({
     });
 
     return canvas;
-  },
+  }
 
-  _initImage: function initImage() {
-    const image = DomUtil.create('img', 'leaflet-image-layer');
+  _initImage() {
+    const image = DomUtil.create('img', 'leaflet-image-layer') as ExtendedImageElement;
 
     if (this.options.crossOrigin) {
       image.crossOrigin = this.options.crossOrigin;
@@ -245,16 +281,16 @@ const NonTiledLayer = Layer.extend({
     });
 
     return image;
-  },
+  }
 
-  redraw: function redraw() {
+  redraw() {
     if (this._map) {
       this._update();
     }
     return this;
-  },
+  }
 
-  _animateZoom: function animateZoom(e) {
+  _animateZoom(e) {
     if (this._useCanvas) {
       if (this._currentCanvas._bounds) this._animateImage(this._currentCanvas, e);
       if (this._bufferCanvas._bounds) this._animateImage(this._bufferCanvas, e);
@@ -262,20 +298,21 @@ const NonTiledLayer = Layer.extend({
       if (this._currentImage._bounds) this._animateImage(this._currentImage, e);
       if (this._bufferImage._bounds) this._animateImage(this._bufferImage, e);
     }
-  },
+  }
 
-  _animateImage: function animateImage(image, e) {
+  _animateImage(image, e) {
     const map = this._map;
     const scale = image._scale * image._sscale * map.getZoomScale(e.zoom);
     const nw = image._bounds.getNorthWest();
-    const topLeft = map._latLngToNewLayerPoint(nw, e.zoom, e.center);
+    // TODO: Stop using this private method.
+    const topLeft = (map as any)._latLngToNewLayerPoint(nw, e.zoom, e.center);
 
     DomUtil.setTransform(image, topLeft, scale);
 
     image._lastScale = scale;
-  },
+  }
 
-  _resetImageScale: function resetImageScale(image) {
+  _resetImageScale(image: ExtendedImageElement | ExtendedCanvasElement) {
     const bounds = new Bounds(
       this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
       this._map.latLngToLayerPoint(image._bounds.getSouthEast()),
@@ -287,9 +324,9 @@ const NonTiledLayer = Layer.extend({
     image._sscale = scale;
 
     DomUtil.setTransform(image, bounds.min, scale);
-  },
+  }
 
-  _resetImage: function resetImage(image) {
+  _resetImage(image) {
     const bounds = new Bounds(
       this._map.latLngToLayerPoint(image._bounds.getNorthWest()),
       this._map.latLngToLayerPoint(image._bounds.getSouthEast()),
@@ -308,9 +345,9 @@ const NonTiledLayer = Layer.extend({
       image.style.width = `${size.x}px`;
       image.style.height = `${size.y}px`;
     }
-  },
+  }
 
-  _getClippedBounds: function getClippedBounds() {
+  _getClippedBounds() {
     const wgsBounds = this._map.getBounds();
 
     // truncate bounds to valid wgs bounds
@@ -334,13 +371,13 @@ const NonTiledLayer = Layer.extend({
     const world2 = new LatLng(mSouth, mEast);
 
     return new LatLngBounds(world1, world2);
-  },
+  }
 
-  _getImageScale: function getImageScale() {
+  _getImageScale() {
     return this.options.detectRetina && Browser.retina ? 2 : 1;
-  },
+  }
 
-  _update: function update() {
+  _update() {
     const bounds = this._getClippedBounds();
 
     // re-project to corresponding pixel bounds
@@ -415,18 +452,18 @@ const NonTiledLayer = Layer.extend({
         i.tag = tag;
       });
     }
-  },
+  }
 
-  _onImageError: function onImageError(e) {
+  _onImageError(e) {
     this.fire('error', e);
     DomUtil.addClass(e.target, 'invalid');
     // prevent error loop if error image is not valid
     if (e.target.src !== this.options.errorImageUrl) {
       e.target.src = this.options.errorImageUrl;
     }
-  },
+  }
 
-  _onImageLoad: function onImageLoad(e) {
+  _onImageLoad(e) {
     if (e.target.src !== this.options.errorImageUrl) {
       DomUtil.removeClass(e.target, 'invalid');
       if (!e.target.key || e.target.key !== this.key) { // obsolete / outdated image
@@ -436,9 +473,9 @@ const NonTiledLayer = Layer.extend({
     this._onImageDone(e);
 
     this.fire('load', e);
-  },
+  }
 
-  _onImageDone: function onImageDone(e) {
+  _onImageDone(e) {
     let tmp;
 
     if (this._useCanvas) {
@@ -459,9 +496,9 @@ const NonTiledLayer = Layer.extend({
     if (e.target.key !== '<empty>') {
       this._div.style.visibility = 'visible';
     }
-  },
+  }
 
-  _renderCanvas: function renderCanvas() {
+  _renderCanvas() {
     const ctx = this._currentCanvas.getContext('2d');
 
     ctx.drawImage(
@@ -482,16 +519,14 @@ const NonTiledLayer = Layer.extend({
     const tmp = this._bufferCanvas;
     this._bufferCanvas = this._currentCanvas;
     this._currentCanvas = tmp;
-  },
-
-});
+  }
+}
 
 /*
- * L.NonTiledLayer.WMS is used for putting WMS non tiled layers on the map.
+ * NonTiledLayerWMS is used for putting WMS non tiled layers on the map.
  */
-(NonTiledLayer as any).WMS = NonTiledLayer.extend({
-
-  defaultWmsParams: {
+export abstract class NonTiledLayerWMS extends NonTiledLayer {
+  defaultWmsParams = {
     service: 'WMS',
     request: 'GetMap',
     version: '1.1.1',
@@ -499,14 +534,14 @@ const NonTiledLayer = Layer.extend({
     styles: '',
     format: 'image/jpeg',
     transparent: false,
-  },
+  };
 
-  options: {
+  options = {
     crs: null,
     uppercase: false,
-  },
+  };
 
-  initialize: function initialize(url, options) { // (String, Object)
+  initialize(url, options) { // (String, Object)
     let i;
 
     this._wmsUrl = url;
@@ -526,9 +561,9 @@ const NonTiledLayer = Layer.extend({
     this.wmsParams = wmsParams;
 
     setOptions(this, options);
-  },
+  }
 
-  onAdd: function onAdd(map) {
+  onAdd(map) {
     this._crs = this.options.crs || map.options.crs;
     this._wmsVersion = parseFloat(this.wmsParams.version);
 
@@ -536,9 +571,11 @@ const NonTiledLayer = Layer.extend({
     this.wmsParams[projectionKey] = this._crs.code;
 
     NonTiledLayer.prototype.onAdd.call(this, map);
-  },
 
-  getImageUrl: function getImageUrl(bounds, width, height) {
+    return this;
+  }
+
+  getImageUrl(bounds, width, height) {
     const { wmsParams } = this;
 
     wmsParams.width = width;
@@ -552,9 +589,9 @@ const NonTiledLayer = Layer.extend({
       : [nw.x, se.y, se.x, nw.y]).join(',');
 
     return url + Util.getParamString(this.wmsParams, url, this.options.uppercase) + (this.options.uppercase ? '&BBOX=' : '&bbox=') + bbox;
-  },
+  }
 
-  setParams: function setParams(params, noRedraw) {
+  setParams(params, noRedraw) {
     extend(this.wmsParams, params);
 
     if (!noRedraw) {
@@ -562,7 +599,5 @@ const NonTiledLayer = Layer.extend({
     }
 
     return this;
-  },
-});
-
-export default NonTiledLayer;
+  }
+}

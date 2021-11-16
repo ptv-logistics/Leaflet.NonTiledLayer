@@ -13,6 +13,7 @@
     "airbnb-typescript/base"
   ],
   "rules": {
+    "max-classes-per-file": "off",
     "no-param-reassign": "off",
     "no-restricted-syntax": "off",
     "no-underscore-dangle": "off"
