@@ -464,8 +464,13 @@ const NonTiledLayer = Layer.extend({
   _renderCanvas: function renderCanvas() {
     const ctx = this._currentCanvas.getContext('2d');
 
-    ctx.drawImage(this._currentCanvas._image, 0, 0,
-      this._currentCanvas.width, this._currentCanvas.height);
+    ctx.drawImage(
+      this._currentCanvas._image,
+      0,
+      0,
+      this._currentCanvas.width,
+      this._currentCanvas.height,
+    );
 
     DomUtil.setOpacity(this._currentCanvas, 1);
     DomUtil.setOpacity(this._bufferCanvas, 0);
