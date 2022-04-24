@@ -23,7 +23,7 @@
 </head>
 
 <body>
-    <div id="map" />
+    <div id="map"></div>
     <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.nontiledlayer@1.0.9/dist/NonTiledLayer.js"></script>
     <!-- <script src="./dist/NonTiledLayer-src.js"></script> -->
@@ -101,7 +101,7 @@
             layers: 'SRTM30-Contour',
             format: 'image/png',
             transparent: true,
-            attribution: 'terrestris &copy; ' + new Date().getFullYear(),
+            attribution: '&copy; terrestris ' + new Date().getFullYear(),
             pane: 'tilePane',
             bounds: L.latLngBounds([-56.0, -180], [60.0, 180])
         }).addTo(map); 
@@ -113,7 +113,7 @@
             layers: 'msg_fes:rgb_airmass',
             transparent: true,
             version: '1.3.0',
-            attribution: 'EUMETSAT &copy; ' + new Date().getFullYear(),
+            attribution: '&copy; EUMETSAT ' + new Date().getFullYear(),
             opacity: 0.75,
             pane: 'tilePane',
             format: 'image/png',
