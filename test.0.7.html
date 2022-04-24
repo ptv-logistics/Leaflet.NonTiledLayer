@@ -44,12 +44,12 @@
        map.attributionControl.setPrefix(
             '<a href="https://github.com/ptv-logistics/Leaflet.NonTiledLayer">Leaflet.NonTiledLayer<\/a>');
 
-        // center Karlsruhe - setting fractional zoom
+        // center Karlsruhe 
         map.setView(L.latLng(49.01, 8.4), 16);
 
         // using the xserver-internet WMS adapter
         var xMapWmsUrl = 'https://api-test.cloud.ptvgroup.com/WMS/WMS?xtok=' + token;
-        var xMapAttribution = '<a href="https://www.ptvgroup.com">PTV<\/a>, TOMTOM';
+        var xMapAttribution = '<a href="https://www.ptvgroup.com">&copy; ' + new Date().getFullYear() + ' PTV Group, TomTom<\/a>';
 
         // add (tiled) background layer
         var background = L.tileLayer.wms(xMapWmsUrl, {
@@ -98,19 +98,19 @@
             layers: 'SRTM30-Contour',
             format: 'image/png',
             transparent: true,
-            attribution: 'terrestris',
+            attribution: 'terrestris &copy; ' + new Date().getFullYear(),
             pane: map.getPanes().tilePane,
             bounds: L.latLngBounds([-56.0, -180], [60.0, 180])
         }).addTo(map); 
 
         // insert airmass layer, at tile pane between background and labels
-        var airmass = L.nonTiledLayer.wms("https://eumetview.eumetsat.int/geoserv/wms", {
+        var airmass = L.nonTiledLayer.wms("https://view.eumetsat.int/geoserver/wms", {
             maxZoom: 8,
             minZoom: 0,
-            layers: 'meteosat:msg_eview',
+            layers: 'msg_fes:rgb_airmass',
             transparent: true,
             version: '1.3.0',
-            attribution: "EUMETSAT 2015",
+            attribution: 'EUMETSAT &copy; ' + new Date().getFullYear(),
             opacity: 0.75,
             pane: map.getPanes().tilePane,
             format: 'image/png',
