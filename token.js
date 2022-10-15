@@ -1,2 +1,2 @@
 // The token below is for internal use only - consider getting your own token!
-var token = '417675FD-0599-4BEE-A99A-1C4E8EF451F9';
+var token = 'C2BA83B8-B432-4A74-BAE2-86106207079B';
