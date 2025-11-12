@@ -348,8 +348,10 @@ const NonTiledLayer = Layer.extend({
     const pix2 = this._map.latLngToContainerPoint(bounds.getSouthEast());
 
     // get pixel size
-    let width = pix2.x - pix1.x;
-    let height = pix2.y - pix1.y;
+    // Use Math.abs() to handle polar projections where the axes may be inverted
+    // relative to standard projections, causing pix2.y < pix1.y
+    let width = Math.abs(pix2.x - pix1.x);
+    let height = Math.abs(pix2.y - pix1.y);
 
     let i;
     if (this._useCanvas) {
@@ -547,9 +549,15 @@ const NonTiledLayer = Layer.extend({
     const nw = this._crs.project(bounds.getNorthWest());
     const se = this._crs.project(bounds.getSouthEast());
     const url = this._wmsUrl;
-    const bbox = (this._wmsVersion >= 1.3 && this._crs === CRS.EPSG4326
-      ? [se.y, nw.x, nw.y, se.x]
-      : [nw.x, se.y, se.x, nw.y]).join(',');
+    let bbox;
+    if (this._wmsVersion >= 1.3 && this._crs === CRS.EPSG4326) {
+      bbox = [se.y, nw.x, nw.y, se.x].join(',');
+    } else if (this._crs.code === "EPSG:3031") {
+      // Polar stereographic projections need minX,minY,maxX,maxY ordering
+      bbox = [nw.x, nw.y, se.x, se.y].join(',');
+    } else {
+      bbox = [nw.x, se.y, se.x, nw.y].join(',');
+    }
 
     return url + Util.getParamString(this.wmsParams, url, this.options.uppercase) + (this.options.uppercase ? '&BBOX=' : '&bbox=') + bbox;
   },
