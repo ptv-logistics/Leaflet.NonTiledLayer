@@ -548,16 +548,14 @@ const NonTiledLayer = Layer.extend({
 
     const nw = this._crs.project(bounds.getNorthWest());
     const se = this._crs.project(bounds.getSouthEast());
+		const minX = Math.min(nw.x, se.x);
+		const maxX = Math.max(nw.x, se.x);
+		const minY = Math.min(nw.y, se.y);
+		const maxY = Math.max(nw.y, se.y);
     const url = this._wmsUrl;
-    let bbox;
-    if (this._wmsVersion >= 1.3 && this._crs === CRS.EPSG4326) {
-      bbox = [se.y, nw.x, nw.y, se.x].join(',');
-    } else if (this._crs.code === "EPSG:3031") {
-      // Polar stereographic projections need minX,minY,maxX,maxY ordering
-      bbox = [nw.x, nw.y, se.x, se.y].join(',');
-    } else {
-      bbox = [nw.x, se.y, se.x, nw.y].join(',');
-    }
+    const bbox = (this._wmsVersion >= 1.3 && this._crs === CRS.EPSG4326
+      ? [minY, minX, maxY, maxX]
+      : [minX, minY, maxX, maxY]).join(',');
 
     return url + Util.getParamString(this.wmsParams, url, this.options.uppercase) + (this.options.uppercase ? '&BBOX=' : '&bbox=') + bbox;
   },
